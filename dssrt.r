@@ -12,7 +12,7 @@ library(rJava)
 ## assumes a 64-bit Windows system
 ## should work with Solaris / Linux version if correct path is set, and path separators are changed below
 if(!exists(dss_location)){
-	dss_location = "C:\\Program Files (x86)\\HEC/HEC-DSSVue\\"" ## set this to the path to your DSSVue library
+	dss_location = "C:\\Program Files (x86)\\HEC/HEC-DSSVue\\" ## set this to the path to your DSSVue library
 }
 jars = c("hec", "heclib", "rma", "hecData") 
 jars = paste0(dss_location, "jar\\", jars, ".jar")
