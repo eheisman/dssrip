@@ -2,8 +2,7 @@
 ## DSS - R interface
 ##
 ## Evan Heisman
-## USACE NWW
-##
+## Provided as is.
 
 library(xts)
 library(rJava)
