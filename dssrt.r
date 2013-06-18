@@ -4,6 +4,11 @@
 ## Evan Heisman
 ## Provided as is.
 
+if("package:rJava" %in% search()){
+    warning("package rJava already loaded")
+    ## Until this becomes a formal package and I can use the package version of rJava
+}
+
 library(xts)
 library(rJava)
 #source("dssrt.r") ## When ready
@@ -11,10 +16,11 @@ library(rJava)
 ## sets to the default location - change if installed elsewhere
 ## assumes a 64-bit Windows system
 ## should work with Solaris / Linux version if correct path is set, and path separators are changed below
-if(!exists(dss_location)){
+if(!exists("dss_location")){
+        warning("variable 'dss_location' was undefined.  Trying default in 'C:\\Program Files (x86)'.")
 	dss_location = "C:\\Program Files (x86)\\HEC/HEC-DSSVue\\" ## set this to the path to your DSSVue library
 }
-jars = c("hec", "heclib", "rma", "hecData") 
+jars = c("hec", "heclib", "rma", "hecData")
 jars = paste0(dss_location, "jar\\", jars, ".jar")
 libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
 .jinit(classpath=jars, parameters=libs)
@@ -26,6 +32,7 @@ opendss <- function(filename){
 
 ## get catalog to usable function
 getPaths = function(file, ...){
+        warning("This function calls the getCatalogedPathnames function and can take some time.")
 	paths = file$getCatalogedPathnames(...)
 	n = paths$size()
 	myList = character()
@@ -54,16 +61,21 @@ hecTime.to.timestamp <- function(t, translator=as.POSIXct){
 	return(translator(datetimes, format="%d %B %Y, %H:%M"))
 }
 
+## Compute HECTime directly
+hecTimeDirect <- function(t){
+
+}
+
+getTSC <- function(file, path){
+  return(tsc.to.xts(file$get(path)))
+}
+
 ## Warning - does not check that all paths are the same except for D part
 getFullTSC <- function(file, path){
 	paths = getPaths(file, path)
-	fullTSC = xts()
+	tscList = list()
 	for(p in paths){
-		if(length(fullTSC)==0){
-			fullTSC = tsc.to.xts(file$get(p))
-		} else {
-			fullTSC = rbind.xts(fullTSC, tsc.to.xts(file$get(p)))
-		}
+    tscList[[p]] = tsc.to.xts(file$get(p))
 	}
-	return(fullTSC)
+	return(do.call(rbind.xts, tscList))
 }
