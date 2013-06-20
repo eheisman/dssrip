@@ -35,6 +35,9 @@ getPaths = function(file, ...){
         warning("This function calls the getCatalogedPathnames function and can take some time.")
 	paths = file$getCatalogedPathnames(...)
 	n = paths$size()
+  if(n==0){
+    return(list())
+  }
 	myList = character()
 	for(i in 1:n){
 		myList[[i]] = paths$get(as.integer(i-1))
