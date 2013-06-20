@@ -1,5 +1,6 @@
 source("C:/dssrt/dssrt.r")
 library(ggplot2)
+library(scales) ## required for probability axis
 
 ## Open file and get TSC
 bwfile = opendss("C:/dssrt/test.dss")
