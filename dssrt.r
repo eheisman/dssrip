@@ -26,6 +26,9 @@ libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
 .jinit(classpath=jars, parameters=libs)
 
 
+
+
+## UTILITY FUNCTIONS
 opendss <- function(filename){
 	dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
 }
@@ -44,6 +47,9 @@ getPaths = function(file, ...){
 	}
 	return(myList)
 }
+
+
+## TIME SERIES FUNCTIONS
 
 ## convert time series container to TSC
 tsc.to.xts <- function(tsc){
@@ -81,4 +87,23 @@ getFullTSC <- function(file, path){
     tscList[[p]] = tsc.to.xts(file$get(p))
 	}
 	return(do.call(rbind.xts, tscList))
+}
+
+
+
+
+## PAIRED DATA FUNCTIONS
+
+getColumnsByName <- function(file, pdc, column){
+  if(class(file)=="character"){
+    file = opendss(file)
+  }
+  if(class(pdc)=="character"){
+    pdc = file$get(pdc)
+  }
+  if(class(column) != "character"){
+	return(pdc$yOrdinates[column,])
+  } else {
+    return(pdc$yOrdinates[which(pdc$labels == column),])
+  }
 }
