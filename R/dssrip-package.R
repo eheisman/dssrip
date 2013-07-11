@@ -4,7 +4,8 @@
 ## Evan Heisman
 ## Provided as is, no warranty, under the MIT license.
 
-import(rJava, xts)
+library(rJava)
+library(xts)
 
 .onLoad <- function(){
   ## initialize DSSVue Link
