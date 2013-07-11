@@ -4,10 +4,10 @@
 ## Evan Heisman
 ## Provided as is, no warranty, under the MIT license.
 
-library(rJava)
-library(xts)
-
 .onLoad <- function(){
+  Sys.setenv(JAVA_HOME='C:\\Program Files (x86)\\Java\\jre7')
+  require(rJava)
+  require(xts)
   ## initialize DSSVue Link
   ## sets to the default location - change if installed elsewhere
   ## assumes a 64-bit Windows system
@@ -23,7 +23,6 @@ library(xts)
   jars = c("hec", "heclib", "rma", "hecData")
   jars = paste0(dss_location, "jar\\", jars, ".jar")
   libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-  Sys.setenv(JAVA_HOME='C:\\Program Files (x86)\\Java\\jre7')
   .jpackage(morePaths=jars, java.parameters=libs)
 }
 
