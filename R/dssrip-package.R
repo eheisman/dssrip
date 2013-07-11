@@ -23,6 +23,7 @@ library(xts)
   jars = c("hec", "heclib", "rma", "hecData")
   jars = paste0(dss_location, "jar\\", jars, ".jar")
   libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
+  Sys.setenv(JAVA_HOME='C:\\Program Files (x86)\\Java\\jre7')
   .jpackage(morePaths=jars, java.parameters=libs)
 }
 
