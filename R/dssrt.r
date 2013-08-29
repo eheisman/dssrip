@@ -30,8 +30,7 @@ opendss <- function(filename){
 	dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
 }
 
-## get catalog to usable function
-getPaths = function(file, ...){
+OLDgetPaths = function(file, ...){
         warning("This function calls the getCatalogedPathnames function and can take some time.")
 	paths = file$getCatalogedPathnames(...)
 	n = paths$size()
@@ -44,6 +43,86 @@ getPaths = function(file, ...){
 	}
 	return(myList)
 }
+
+
+## get catalog to usable function
+getAllPaths = function(file){
+	paths = file$getCatalogedPathnames()
+	n = paths$size()
+  if(n==0){
+    return(list())
+  }
+	myList = character()
+	for(i in 1:n){
+		myList[[i]] = paths$get(as.integer(i-1))
+	}
+	return(myList)
+}
+
+getPaths = function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
+  paths = getAllPaths(dssfile)
+  if(!is.null(searchfunction)){
+    paths = searchfunction(paths, pattern)
+  }
+  return(paths)
+}
+
+nofilter = function(paths, pattern){
+  return(paths)
+}
+
+fullPathByWildcard = function(paths, pattern){
+  return(fullPathByRegex(paths, glob2rx(pattern)))
+}
+
+pathByPartsWildcard= function(paths, pattern){
+  ## TODO:  Replace "@" in pattern with "*", to match HEC wildcard set
+  return(pathByPartsRegEx(paths, pattern.parts=splitPattern(pattern, to.regex=T)))
+}
+
+fullPathByRegex = function(paths, pattern){
+  return(paths[grepl(pattern, paths)])
+}
+
+splitPattern = function(pattern, to.regex=F){
+  ## For use in the pathByParts searches
+  if(!grepl(fixed("="), pattern)){
+    warning(paste0("Bad pattern: ", pattern))
+  }
+  pattern.raw = str_split(pattern, "=")[[1]]
+  keys = pattern.raw[1:(length(pattern.raw)-1)]
+  keys = str_trim(substr(keys, str_length(firsts)-1, str_length(firsts)))
+  values = pattern.raw[2:(length(pattern.raw))]
+  values = str_trim(substr(values, 1, str_length(values)-c(rep(1,length(values)-1),0)))
+  if(to.regex) values = glob2rx(values)
+  values = as.list(values)
+  names(values) = keys
+  return(values)
+}
+
+pathByPartsRegEx = function(paths, pattern, pattern.parts=NULL){
+  parts.df = data.frame(do.call(rbind, str_split(paths, fixed("/")))[,2:7])
+  colnames(parts.df) = toupper(letters[1:6])
+  parts.df$PATH = paths
+  if(is.null(pattern.parts)){
+    pattern.parts = splitPattern(pattern, to.regex=T)
+  }
+  parts.df$MATCH = T
+  for(n in names(pattern.parts)){
+    parts.df$MATCH = parts.df$MATCH & grepl(pattern.parts[[n]], parts.df[,n])
+  }
+  return(subset(parts.df, MATCH)$PATH)
+}
+
+treesearch = function(paths, pattern){
+  warning("treesearch not yet implemented")
+  return(paths)
+}
+
+
+system.time(getPaths(dssfile, pattern="A=FCST B=TDA C=VOLUME*APR-AUG*", searchfunction=pathByPartsWildcard))
+
+
 
 ## convert time series container to TSC
 tsc.to.xts <- function(tsc){
