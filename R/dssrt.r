@@ -18,7 +18,7 @@ library(rJava)
 ## should work with Solaris / Linux version if correct path is set, and path separators are changed below
 if(!exists("dss_location")){
         warning("variable 'dss_location' was undefined.  Trying default in 'C:\\Program Files (x86)'.")
-	dss_location = "C:\\Program Files (x86)\\HEC/HEC-DSSVue\\" ## set this to the path to your DSSVue library
+	dss_location = "C:\\Program Files (x86)\\HEC\\HEC-DSSVue\\" ## set this to the path to your DSSVue library
 }
 jars = c("hec", "heclib", "rma", "hecData")
 jars = paste0(dss_location, "jar\\", jars, ".jar")
@@ -118,10 +118,6 @@ treesearch = function(paths, pattern){
   warning("treesearch not yet implemented")
   return(paths)
 }
-
-
-system.time(getPaths(dssfile, pattern="A=FCST B=TDA C=VOLUME*APR-AUG*", searchfunction=pathByPartsWildcard))
-
 
 
 ## convert time series container to TSC
