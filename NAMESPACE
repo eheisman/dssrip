@@ -1,5 +1,4 @@
 import(rJava, xts, stringr)
-useDynLib(javaHeclib)
 export(opendss, 
        OLDgetPaths,
        getAllPaths, 
