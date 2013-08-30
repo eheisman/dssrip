@@ -19,7 +19,7 @@ if("package:rJava" %in% search()){
     warning(paste0("variable 'dss_location' was undefined.  Trying default in '", dss_location, "'."))
   }
   
-  Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
+  #Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
   require(rJava)
   jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
   libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
@@ -29,8 +29,6 @@ if("package:rJava" %in% search()){
   require(xts)  
   require(stringr)
 }
-
-
 
 opendss <- function(filename){
 	dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
