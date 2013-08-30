@@ -1,4 +1,4 @@
-import(rJava, xts)
+import(rJava, xts, stringr)
 export(opendss, 
        getAllPaths, 
 	   getPaths, 

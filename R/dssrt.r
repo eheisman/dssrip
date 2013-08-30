@@ -9,23 +9,27 @@ if("package:rJava" %in% search()){
   ## sets to the default location - change if installed elsewhere
   ## assumes a 64-bit Windows system
   ## should work with Solaris / Linux version if correct path is set, and path separators are changed below
- 
-  # if(!exists("dss_location")){
-    # dss_location = ""
-    # if(Sys.info()[["sysname"]] == "Windows"){
-      # dss_location = paste0(Sys.getenv("ProgramFiles(x86)"),"\\HEC\\HEC-DSSVue\\")
-    # }
-    # warning(paste0("variable 'dss_location' was undefined.  Trying default in '", dss_location, "'."))
-  # }
+  warning("Not loaded as package...")
   
-  #Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
-  #require(rJava)
-  #jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
-  #libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
+  if(!exists("dss_location")){
+    dss_location = ""
+    if(Sys.info()[["sysname"]] == "Windows"){
+      dss_location = paste0(Sys.getenv("ProgramFiles(x86)"),"\\HEC\\HEC-DSSVue\\")
+    }
+    warning(paste0("variable 'dss_location' was undefined.  Trying default in '", dss_location, "'."))
+  }
   
-  # .jinit(classpath=jars, parameters=libs)
+  Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
+  require(rJava)
+  jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
+  libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
+  
+  .jinit(classpath=jars, parameters=libs)
+
+  require(xts)  
+  require(stringr)
 }
-library(xts)
+
 
 
 opendss <- function(filename){
@@ -69,6 +73,22 @@ getPaths <- function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
   return(paths)
 }
 
+splitPattern <- function(pattern, to.regex=F){
+  ## For use in the pathByParts searches
+  if(!grepl(fixed("="), pattern)){
+    warning(paste0("Bad pattern: ", pattern))
+  }
+  pattern.raw = str_split(pattern, "=")[[1]]
+  keys = pattern.raw[1:(length(pattern.raw)-1)]
+  keys = str_trim(substr(keys, str_length(keys)-1, str_length(keys)))
+  values = pattern.raw[2:(length(pattern.raw))]
+  values = str_trim(substr(values, 1, str_length(values)-c(rep(1,length(values)-1),0)))
+  if(to.regex) values = glob2rx(values)
+  values = as.list(values)
+  names(values) = keys
+  return(values)
+}
+
 nofilter <- function(paths, pattern){
   return(paths)
 }
@@ -84,22 +104,6 @@ pathByPartsWildcard <- function(paths, pattern){
 
 fullPathByRegex <- function(paths, pattern){
   return(paths[grepl(pattern, paths)])
-}
-
-splitPattern <- function(pattern, to.regex=F){
-  ## For use in the pathByParts searches
-  if(!grepl(fixed("="), pattern)){
-    warning(paste0("Bad pattern: ", pattern))
-  }
-  pattern.raw = str_split(pattern, "=")[[1]]
-  keys = pattern.raw[1:(length(pattern.raw)-1)]
-  keys = str_trim(substr(keys, str_length(firsts)-1, str_length(firsts)))
-  values = pattern.raw[2:(length(pattern.raw))]
-  values = str_trim(substr(values, 1, str_length(values)-c(rep(1,length(values)-1),0)))
-  if(to.regex) values = glob2rx(values)
-  values = as.list(values)
-  names(values) = keys
-  return(values)
 }
 
 pathByPartsRegex <- function(paths, pattern, pattern.parts=NULL){

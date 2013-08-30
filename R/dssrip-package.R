@@ -20,12 +20,9 @@
   
   ## Setup Java
   #Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
-  require(rJava)
   jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
   libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
   .jpackage(pkgname, morePaths=jars) #, java.parameters=libs)
   
-  ## Load other libraries
-  require(xts)
 }
 

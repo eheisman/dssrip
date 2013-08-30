@@ -10,5 +10,5 @@ Description: A package to wrap the Java API for the HEC-DSSVue program used to
   other HEC product providing the appropriate .jar and shared libraries.  This 
   code has only been tested for R 2.15 under Windows 7 and XP, and R 3.0 under
   Windows XP.
-Depends: rJava, xts
+Depends: rJava, xts, stringr
 License: MIT
