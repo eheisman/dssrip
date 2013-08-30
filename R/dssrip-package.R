@@ -8,7 +8,7 @@
   ## should work with Solaris / Linux version if correct path is set, and path
   ## separators are changed below
   if("package:rJava" %in% search()){
-    warning("package rJava already loaded")
+    warning("package rJava already loaded, if not by dssrip, may not be able to find right DLLs")
   }
   if(!exists("dss_location")){
     dss_location = ""
@@ -20,13 +20,7 @@
   
   ## Setup Java
   #Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
-  # jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
-  # libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-  # libs = paste0(dss_location,"\\lib\\")
-  # .jpackage(pkgname, morePaths=jars, lib.loc=libs)
-
   jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
   libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-  
-  .jinit(classpath=jars, parameters=libs)  
+  .jpackage(pkgname, morePaths=jars, java.parameters=libs)
 }
