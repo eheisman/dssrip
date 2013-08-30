@@ -2,6 +2,7 @@ Package: dssrip
 Title: DSS R Interface Project
 Version: 0.0.1
 Date: 2013-06-28
+Architecture: i386
 Author: Evan A. Heisman
 Maintainer: Evan Heisman <heisman+dssrip@gmail.com>
 Description: A package to wrap the Java API for the HEC-DSSVue program used to 
@@ -12,3 +13,4 @@ Description: A package to wrap the Java API for the HEC-DSSVue program used to
   Windows XP.
 Depends: rJava, xts, stringr
 License: MIT
+BugReports: 62heisman@gmail.com
