@@ -1,36 +1,38 @@
-## dssrt.r  "dessert"
-## DSS - R interface
-##
+## DSS - R interface project
 ## Evan Heisman
-## Provided as is.
 
 if("package:rJava" %in% search()){
     warning("package rJava already loaded")
     ## Until this becomes a formal package and I can use the package version of rJava
+} else {
+  ## initialize DSSVue Link
+  ## sets to the default location - change if installed elsewhere
+  ## assumes a 64-bit Windows system
+  ## should work with Solaris / Linux version if correct path is set, and path separators are changed below
+ 
+  # if(!exists("dss_location")){
+    # dss_location = ""
+    # if(Sys.info()[["sysname"]] == "Windows"){
+      # dss_location = paste0(Sys.getenv("ProgramFiles(x86)"),"\\HEC\\HEC-DSSVue\\")
+    # }
+    # warning(paste0("variable 'dss_location' was undefined.  Trying default in '", dss_location, "'."))
+  # }
+  
+  #Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
+  #require(rJava)
+  #jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
+  #libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
+  
+  # .jinit(classpath=jars, parameters=libs)
 }
-
 library(xts)
-library(rJava)
-#source("dssrt.r") ## When ready
-## initialize DSSVue Link
-## sets to the default location - change if installed elsewhere
-## assumes a 64-bit Windows system
-## should work with Solaris / Linux version if correct path is set, and path separators are changed below
-if(!exists("dss_location")){
-        warning("variable 'dss_location' was undefined.  Trying default in 'C:\\Program Files (x86)'.")
-	dss_location = "C:\\Program Files (x86)\\HEC\\HEC-DSSVue\\" ## set this to the path to your DSSVue library
-}
-jars = c("hec", "heclib", "rma", "hecData")
-jars = paste0(dss_location, "jar\\", jars, ".jar")
-libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-.jinit(classpath=jars, parameters=libs)
 
 
 opendss <- function(filename){
 	dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
 }
 
-OLDgetPaths = function(file, ...){
+OLDgetPaths <- function(file, ...){
         warning("This function calls the getCatalogedPathnames function and can take some time.")
 	paths = file$getCatalogedPathnames(...)
 	n = paths$size()
@@ -46,7 +48,7 @@ OLDgetPaths = function(file, ...){
 
 
 ## get catalog to usable function
-getAllPaths = function(file){
+getAllPaths <- function(file){
 	paths = file$getCatalogedPathnames()
 	n = paths$size()
   if(n==0){
@@ -59,7 +61,7 @@ getAllPaths = function(file){
 	return(myList)
 }
 
-getPaths = function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
+getPaths <- function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
   paths = getAllPaths(dssfile)
   if(!is.null(searchfunction)){
     paths = searchfunction(paths, pattern)
@@ -67,24 +69,24 @@ getPaths = function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
   return(paths)
 }
 
-nofilter = function(paths, pattern){
+nofilter <- function(paths, pattern){
   return(paths)
 }
 
-fullPathByWildcard = function(paths, pattern){
+fullPathByWildcard <- function(paths, pattern){
   return(fullPathByRegex(paths, glob2rx(pattern)))
 }
 
-pathByPartsWildcard= function(paths, pattern){
+pathByPartsWildcard <- function(paths, pattern){
   ## TODO:  Replace "@" in pattern with "*", to match HEC wildcard set
-  return(pathByPartsRegEx(paths, pattern.parts=splitPattern(pattern, to.regex=T)))
+  return(pathByPartsRegex(paths, pattern.parts=splitPattern(pattern, to.regex=T)))
 }
 
-fullPathByRegex = function(paths, pattern){
+fullPathByRegex <- function(paths, pattern){
   return(paths[grepl(pattern, paths)])
 }
 
-splitPattern = function(pattern, to.regex=F){
+splitPattern <- function(pattern, to.regex=F){
   ## For use in the pathByParts searches
   if(!grepl(fixed("="), pattern)){
     warning(paste0("Bad pattern: ", pattern))
@@ -100,7 +102,7 @@ splitPattern = function(pattern, to.regex=F){
   return(values)
 }
 
-pathByPartsRegEx = function(paths, pattern, pattern.parts=NULL){
+pathByPartsRegex <- function(paths, pattern, pattern.parts=NULL){
   parts.df = data.frame(do.call(rbind, str_split(paths, fixed("/")))[,2:7])
   colnames(parts.df) = toupper(letters[1:6])
   parts.df$PATH = paths
@@ -114,7 +116,7 @@ pathByPartsRegEx = function(paths, pattern, pattern.parts=NULL){
   return(subset(parts.df, MATCH)$PATH)
 }
 
-treesearch = function(paths, pattern){
+treesearch <- function(paths, pattern){
   warning("treesearch not yet implemented")
   return(paths)
 }
