@@ -54,3 +54,6 @@ pip-log.txt
 .Rhistory
 .Rdata
 ..Rcheck/
+R/dssrip.rdb
+R/dssrip.rdx
+R/dssrip

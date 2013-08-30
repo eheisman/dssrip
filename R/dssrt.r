@@ -127,7 +127,6 @@ treesearch <- function(paths, pattern){
 ## convert time series container to TSC
 tsc.to.xts <- function(tsc){
 	times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
-      #times = hecTime.to.timestamp(hecTime(tsc$times))
 	values = tsc$values
       out = xts(values, times)
       colnames(out) = tsc$parameter
@@ -156,9 +155,8 @@ getTSC <- function(file, path){
 }
 
 ## Warning - does not check that all paths are the same except for D part
-getFullTSC <- function(file, path){
-	paths = getPaths(file, path)
-	tscList = list()
+getFullTSC <- function(file, paths){
+  tscList = list()
 	for(p in paths){
     tscList[[p]] = tsc.to.xts(file$get(p))
 	}

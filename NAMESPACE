@@ -1,4 +1,5 @@
 import(rJava, xts, stringr)
+useDynLib(javaHeclib)
 export(opendss, 
        OLDgetPaths,
        getAllPaths, 
@@ -7,6 +8,8 @@ export(opendss,
 	   pathByPartsWildcard,
 	   fullPathByRegex,
 	   pathByPartsRegex,
+	   tsc.to.xts,
+	   hecTime.to.timestamp,
 	   getTSC,
 	   getFullTSC,
 	   getColumnsByName)

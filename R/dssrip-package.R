@@ -20,13 +20,11 @@
   
   ## Setup Java
   #Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
-  # jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
-  # libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-  # libs = paste0(dss_location,"\\lib\\")
-  # .jpackage(pkgname, morePaths=jars, lib.loc=libs)
-
   jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
-  libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-  
-  .jinit(classpath=jars, parameters=libs)  
+  libs = paste0(dss_location,"\\lib\\")
+  .jpackage(pkgname, morePaths=jars)
+
+  #jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
+  #libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
+  #.jinit(classpath=jars, parameters=libs)  
 }
