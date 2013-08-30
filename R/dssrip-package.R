@@ -5,8 +5,7 @@
 ## Provided as is, no warranty, under the MIT license.
 
 .onLoad <- function(){
-  Sys.setenv(JAVA_HOME='C:\\Program Files (x86)\\Java\\jre7')
-  require(rJava)
+   require(rJava)
   require(xts)
   ## initialize DSSVue Link
   ## sets to the default location - change if installed elsewhere
@@ -20,10 +19,11 @@
     warning("variable 'dss_location' was undefined.  Trying default in 'C:\\Program Files (x86)'.")
     dss_location = "C:\\Program Files (x86)\\HEC/HEC-DSSVue\\" 
   }
+  Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
   jars = c("hec", "heclib", "rma", "hecData")
   jars = paste0(dss_location, "jar\\", jars, ".jar")
   libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-  .jpackage(morePaths=jars, java.parameters=libs)
+  .jpackage("dssrip", morePaths=jars, java.parameters=libs)
 }
 
 

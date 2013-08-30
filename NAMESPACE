@@ -1,0 +1,11 @@
+import(rJava, xts)
+export(opendss, 
+       getAllPaths, 
+	   getPaths, 
+       fullPathByWildcard, 
+	   pathByPartsWildcard,
+	   fullPathByRegex,
+	   pathByPartsRegex,
+	   getTSC,
+	   getFullTSC,
+	   getColumnsByName)
