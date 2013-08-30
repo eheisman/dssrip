@@ -9,7 +9,6 @@ export(opendss,
 	   fullPathByRegex,
 	   pathByPartsRegex,
 	   tsc.to.xts,
-	   hecTime.to.timestamp,
 	   getTSC,
 	   getFullTSC,
 	   getColumnsByName)

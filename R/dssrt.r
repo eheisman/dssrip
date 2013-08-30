@@ -133,23 +133,6 @@ tsc.to.xts <- function(tsc){
 	return(out)
 }
 
-## HEC int time to timestamp
-hecTime <- Vectorize(function(timeInt){
-	t = new(J("hec/heclib/util/HecTime"))
-	t$set(as.integer(timeInt))
-	return(t)
-})
-
-hecTime.to.timestamp <- function(t, translator=as.POSIXct){
-	datetimes = sapply(t, .jcall, method="dateAndTime", returnSig="S")
-	return(translator(datetimes, format="%d %B %Y, %H:%M"))
-}
-
-## Compute HECTime directly
-hecTimeDirect <- function(t){
-  return(as.POSIXct(t$getTimeInMillis()/1000, "1970-01-01 00:00"))
-}
-
 getTSC <- function(file, path){
   return(tsc.to.xts(file$get(path)))
 }
@@ -158,7 +141,8 @@ getTSC <- function(file, path){
 getFullTSC <- function(file, paths){
   tscList = list()
 	for(p in paths){
-    tscList[[p]] = tsc.to.xts(file$get(p))
+    cat(p)
+    tscList[[p]] = getTSC(file, p)
 	}
 	return(do.call(rbind.xts, tscList))
 }
