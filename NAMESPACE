@@ -1,5 +1,6 @@
 import(rJava, xts, stringr)
 export(opendss, 
+       OLDgetPaths,
        getAllPaths, 
 	   getPaths, 
        fullPathByWildcard, 
