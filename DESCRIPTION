@@ -13,4 +13,4 @@ Description: A package to wrap the Java API for the HEC-DSSVue program used to
   Windows XP.
 Depends: rJava, xts, stringr
 License: MIT
-BugReports: 62heisman@gmail.com
+BugReports: heisman+dssripbugs@gmail.com
