@@ -1,33 +1,36 @@
 ## DSS - R interface project
 ## Evan Heisman
 
-if("package:rJava" %in% search()){
-    warning("package rJava already loaded")
-    ## Until this becomes a formal package and I can use the package version of rJava
-} else {
-  ## initialize DSSVue Link
-  ## sets to the default location - change if installed elsewhere
-  ## assumes a 64-bit Windows system
-  ## should work with Solaris / Linux version if correct path is set, and path separators are changed below
-  warning("Not loaded as package...")
-  
-  if(!exists("dss_location")){
-    dss_location = ""
-    if(Sys.info()[["sysname"]] == "Windows"){
-      dss_location = paste0(Sys.getenv("ProgramFiles(x86)"),"\\HEC\\HEC-DSSVue\\")
+initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL){
+  if(is.null(platform)){
+    platform = tolower(Sys.info()[["sysname"]])
+  }
+  path.sep = "/"
+  library.ext = ".so"
+  if(platform == "windows"){
+    path.sep = "\\"
+    library.ext = ".dll"
+  }
+  if(is.null(dss_location)){
+    if(platform == "windows"){
+      dss_location = paste0(Sys.getenv("ProgramFiles(x86)"), path.sep, "HEC", path.sep, "HEC-DSSVue", path.sep)
+    } else {
+      dss_location = Sys.getenv("DSS_HOME")
     }
-    warning(paste0("variable 'dss_location' was undefined.  Trying default in '", dss_location, "'."))
   }
   
-  #Sys.setenv(JAVA_HOME=paste0(dss_location, "jre\\bin\\"))
-  require(rJava)
-  jars = paste0(dss_location, "jar\\", c("hec", "heclib", "rma", "hecData"), ".jar")
-  libs = paste0("-Djava.library.path=", dss_location, "\\lib\\")
-  
-  .jinit(classpath=jars, parameters=libs)
-
-  require(xts)  
-  require(stringr)
+  jars = paste0(dss_location, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
+  if(!as.package){
+    require(rJava)
+    libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
+    .jinit(classpath=jars, parameters=libs)
+    require(xts)
+    require(stringr)
+  } else {
+    lib = paste0(dss_location, path.sep, "lib", path.sep, "javaHeclib.dll")
+    dyn.load(lib)
+    .jpackage(pkgname, morePaths=jars)
+  }
 }
 
 opendss <- function(filename){
@@ -35,7 +38,7 @@ opendss <- function(filename){
 }
 
 OLDgetPaths <- function(file, ...){
-        warning("This function calls the getCatalogedPathnames function and can take some time.")
+  warning("This function calls the getCatalogedPathnames function and can take some time.")
 	paths = file$getCatalogedPathnames(...)
 	n = paths$size()
   if(n==0){
@@ -141,7 +144,6 @@ getTSC <- function(file, path){
 getFullTSC <- function(file, paths){
   tscList = list()
 	for(p in paths){
-    cat(p)
     tscList[[p]] = getTSC(file, p)
 	}
 	return(do.call(rbind.xts, tscList))
