@@ -1,5 +1,6 @@
 import(rJava, xts, stringr)
-export(opendss, 
+export(initialize.dssrip,
+       opendss, 
        OLDgetPaths,
        getAllPaths, 
 	   getPaths, 
