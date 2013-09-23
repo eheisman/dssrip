@@ -54,16 +54,23 @@ OLDgetPaths <- function(file, ...){
 
 ## get catalog to usable function
 getAllPaths <- function(file){
-	paths = file$getCatalogedPathnames()
-	n = paths$size()
-  if(n==0){
-    return(list())
+  fn = sprintf('%s.dsc',tools:::file_path_sans_ext(file$getFilename()))
+  if(file.exists(fn)){
+    meta = read.table(fn,skip=10,stringsAsFactors=FALSE)
+    paths = meta[,ncol(meta)]
+    return(paths)
+	} else { 
+    file$getCatalogedPathnames()
+    n = paths$size()
+    if(n==0){
+      return(list())
+    }
+    myList = character()
+    for(i in 1:n){
+      myList[[i]] = paths$get(as.integer(i-1))
+    }
+    return(myList)
   }
-	myList = character()
-	for(i in 1:n){
-		myList[[i]] = paths$get(as.integer(i-1))
-	}
-	return(myList)
 }
 
 getPaths <- function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
@@ -127,17 +134,30 @@ treesearch <- function(paths, pattern){
 }
 
 
-## convert time series container to TSC
+## convert time series container to XTS
 tsc.to.xts <- function(tsc){
 	times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
 	values = tsc$values
-      out = xts(values, times)
-      colnames(out) = tsc$parameter
+  out = xts(values, times)
+  colnames(out) = tsc$parameter
 	return(out)
+}
+
+## convert time series container to DT
+tsc.to.dt <- function(tsc){
+  require(data.table)
+  times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
+  values = tsc$values
+  out = data.table(datetime=times,value=values)
+  return(out)
 }
 
 getTSC <- function(file, path){
   return(tsc.to.xts(file$get(path)))
+}
+
+getDT <- function(file, path){
+  return(tsc.to.dt(file$get(path)))
 }
 
 ## Warning - does not check that all paths are the same except for D part
@@ -147,6 +167,15 @@ getFullTSC <- function(file, paths){
     tscList[[p]] = getTSC(file, p)
 	}
 	return(do.call(rbind.xts, tscList))
+}
+
+getFullDT <- function(file, paths){
+  require(data.table)
+  dtList = list()
+  for(p in paths){
+    dtList[[p]] = getDT(file, p)
+  }
+  return(do.call(rbind, dtList))
 }
 
 ## PairedDataContainer functions
