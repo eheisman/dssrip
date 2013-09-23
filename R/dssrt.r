@@ -53,24 +53,23 @@ OLDgetPaths <- function(file, ...){
 
 
 ## get catalog to usable function
-getAllPaths <- function(file){
-  fn = sprintf('%s.dsc',tools:::file_path_sans_ext(file$getFilename()))
-  if(file.exists(fn)){
-    meta = read.table(fn,skip=10,stringsAsFactors=FALSE)
-    paths = meta[,ncol(meta)]
-    return(paths)
-	} else { 
-    file$getCatalogedPathnames()
-    n = paths$size()
-    if(n==0){
-      return(list())
-    }
-    myList = character()
-    for(i in 1:n){
-      myList[[i]] = paths$get(as.integer(i-1))
-    }
-    return(myList)
-  }
+getAllPaths <- function(file, rebuild=FALSE){
+  dss_fn = file$getFilename()
+  dsc_fn = sprintf('%s.dsc',tools:::file_path_sans_ext(dss_fn))
+  dsc_exists = file.exists(dsc_fn)
+
+  dsc_mtime = file.info(dsc_fn)$mtime
+  dss_mtime = file.info(dss_fn)$mtime
+    # this will force the recreation of the catalog file if:
+    # 1. it does not exist
+    # 2. it is older than the dss file
+    # 3. a rebuild is forced with rebuild=TRUE
+  if(!isTRUE(dsc_exists) | isTRUE(dss_mtime > dsc_mtime) | isTRUE(rebuild))
+    file$getCatalogedPathnames(TRUE)
+  
+  meta = read.table(dsc_fn,skip=10,stringsAsFactors=FALSE)
+  paths = meta[,ncol(meta)]
+  return(paths)
 }
 
 getPaths <- function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
