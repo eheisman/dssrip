@@ -1,7 +1,7 @@
 ## DSS - R interface project
 ## Evan Heisman
 
-initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL){
+initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jmemory=NULL){
   if(is.null(platform)){
     platform = tolower(Sys.info()[["sysname"]])
   }
@@ -22,10 +22,10 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL){
   jars = paste0(dss_location, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
   if(!as.package){
     require(rJava)
-    libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
-    .jinit(classpath=jars, parameters=libs)
-    require(xts)
     require(stringr)
+    libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
+    .jinit(classpath=jars, parameters=str_trim(paste(libs,jmemory)))
+    require(xts)
   } else {
     lib = paste0(dss_location, path.sep, "lib", path.sep, "javaHeclib.dll")
     dyn.load(lib)
@@ -54,6 +54,7 @@ OLDgetPaths <- function(file, ...){
 
 ## get catalog to usable function
 getAllPaths <- function(file, rebuild=FALSE){
+  require(stringr)
   dss_fn = file$getFilename()
   dsc_fn = sprintf('%s.dsc',tools:::file_path_sans_ext(dss_fn))
   dsc_exists = file.exists(dsc_fn)
@@ -67,8 +68,11 @@ getAllPaths <- function(file, rebuild=FALSE){
   if(!isTRUE(dsc_exists) | isTRUE(dss_mtime > dsc_mtime) | isTRUE(rebuild))
     file$getCatalogedPathnames(TRUE)
   
-  meta = read.table(dsc_fn,skip=10,stringsAsFactors=FALSE)
-  paths = meta[,ncol(meta)]
+  #meta = read.table(dsc_fn,skip=10,stringsAsFactors=FALSE)
+  #paths = meta[,ncol(meta)]
+  dsc = readLines(dsc_fn)
+  paths = dsc[11:length(dsc)]
+  paths = str_sub(paths,19,str_length(paths))  
   return(paths)
 }
 
@@ -113,10 +117,15 @@ fullPathByRegex <- function(paths, pattern){
   return(paths[grepl(pattern, paths)])
 }
 
-pathByPartsRegex <- function(paths, pattern, pattern.parts=NULL){
+separateParts <- function(paths){
   parts.df = data.frame(do.call(rbind, str_split(paths, fixed("/")))[,2:7])
   colnames(parts.df) = toupper(letters[1:6])
   parts.df$PATH = paths
+  return(parts.df)
+}
+
+pathByPartsRegex <- function(paths, pattern, pattern.parts=NULL){
+  parts.df = separateParts(paths)
   if(is.null(pattern.parts)){
     pattern.parts = splitPattern(pattern, to.regex=T)
   }
@@ -178,7 +187,6 @@ getFullDT <- function(file, paths){
 }
 
 ## PairedDataContainer functions
-
 getColumnsByName <- function(file, pdc, column){
   if(class(file)=="character"){
     file = opendss(file)
