@@ -2,6 +2,8 @@
 ## Evan Heisman
 
 initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jmemory=NULL){
+  ## jmemory example: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
+  
   if(is.null(platform)){
     platform = tolower(Sys.info()[["sysname"]])
   }
@@ -50,7 +52,6 @@ OLDgetPaths <- function(file, ...){
 	}
 	return(myList)
 }
-
 
 ## get catalog to usable function
 getAllPaths <- function(file, rebuild=FALSE){
@@ -117,7 +118,8 @@ fullPathByRegex <- function(paths, pattern){
   return(paths[grepl(pattern, paths)])
 }
 
-separateParts <- function(paths){
+## useful function for writing filters
+separatePathParts <- function(paths){
   parts.df = data.frame(do.call(rbind, str_split(paths, fixed("/")))[,2:7])
   colnames(parts.df) = toupper(letters[1:6])
   parts.df$PATH = paths
@@ -125,7 +127,7 @@ separateParts <- function(paths){
 }
 
 pathByPartsRegex <- function(paths, pattern, pattern.parts=NULL){
-  parts.df = separateParts(paths)
+  parts.df = separatePathParts(paths)
   if(is.null(pattern.parts)){
     pattern.parts = splitPattern(pattern, to.regex=T)
   }
