@@ -1,6 +1,16 @@
 ## DSS - R interface project
 ## Evan Heisman
 
+#' initialize.dssrip
+#' 
+#' Short description
+#' 
+#' Long Description
+#' 
+#' @return Nothing useful returned.
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jmemory=NULL){
   ## jmemory example: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
   
@@ -35,6 +45,16 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jme
   }
 }
 
+#' opendss
+#' 
+#' Short description
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 opendss <- function(filename){
 	dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
 }
@@ -53,7 +73,16 @@ OLDgetPaths <- function(file, ...){
 	return(myList)
 }
 
-## get catalog to usable function
+#' getAllPaths
+#' 
+#' get catalog to usable function
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 getAllPaths <- function(file, rebuild=FALSE){
   require(stringr)
   dss_fn = file$getFilename()
@@ -77,6 +106,16 @@ getAllPaths <- function(file, rebuild=FALSE){
   return(paths)
 }
 
+#' getPaths
+#' 
+#' get catalog to usable function
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 getPaths <- function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
   paths = getAllPaths(dssfile)
   if(!is.null(searchfunction)){
@@ -105,20 +144,59 @@ nofilter <- function(paths, pattern){
   return(paths)
 }
 
+#' fullPathByWildcard
+#' 
+#' Short description
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 fullPathByWildcard <- function(paths, pattern){
   return(fullPathByRegex(paths, glob2rx(pattern)))
 }
 
+#' pathByPartsWildcard
+#' 
+#' Short description
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 pathByPartsWildcard <- function(paths, pattern){
   ## TODO:  Replace "@" in pattern with "*", to match HEC wildcard set
   return(pathByPartsRegex(paths, pattern.parts=splitPattern(pattern, to.regex=T)))
 }
 
+#' fullPathByRegex
+#' 
+#' Short description
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 fullPathByRegex <- function(paths, pattern){
   return(paths[grepl(pattern, paths)])
 }
 
-## useful function for writing filters
+#' separatePathParts
+#' 
+#' useful function for writing filters
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 separatePathParts <- function(paths){
   parts.df = data.frame(do.call(rbind, str_split(paths, fixed("/")))[,2:7])
   colnames(parts.df) = toupper(letters[1:6])
@@ -126,6 +204,16 @@ separatePathParts <- function(paths){
   return(parts.df)
 }
 
+#' pathByPartsRegex
+#' 
+#' Short description
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 pathByPartsRegex <- function(paths, pattern, pattern.parts=NULL){
   parts.df = separatePathParts(paths)
   if(is.null(pattern.parts)){
@@ -144,7 +232,16 @@ treesearch <- function(paths, pattern){
 }
 
 
-## convert time series container to XTS
+#' tsc.to.xts
+#' 
+#' convert time series container to XTS
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 tsc.to.xts <- function(tsc){
 	times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
 	values = tsc$values
@@ -153,7 +250,16 @@ tsc.to.xts <- function(tsc){
 	return(out)
 }
 
-## convert time series container to DT
+#' tsc.to.dt
+#' 
+#' convert time series container to data.table
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Cameron Bracken
+#' @export 
 tsc.to.dt <- function(tsc){
   require(data.table)
   times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
@@ -162,15 +268,44 @@ tsc.to.dt <- function(tsc){
   return(out)
 }
 
+#' getTSC
+#' 
+#' Short Desc
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 getTSC <- function(file, path){
   return(tsc.to.xts(file$get(path)))
 }
 
+#' detDT
+#' 
+#' short desc
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Cameron Bracken
+#' @export 
 getDT <- function(file, path){
   return(tsc.to.dt(file$get(path)))
 }
 
-## Warning - does not check that all paths are the same except for D part
+#' getFullTSC
+#' 
+#' Short Desc
+#' 
+#' Warning - does not check that all paths are the same except for D part
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 getFullTSC <- function(file, paths){
   tscList = list()
 	for(p in paths){
@@ -179,6 +314,16 @@ getFullTSC <- function(file, paths){
 	return(do.call(rbind.xts, tscList))
 }
 
+#' getFullDT
+#' 
+#' Short Desc
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Cameron Bracken
+#' @export 
 getFullDT <- function(file, paths){
   require(data.table)
   dtList = list()
@@ -189,6 +334,17 @@ getFullDT <- function(file, paths){
 }
 
 ## PairedDataContainer functions
+
+#' getColumnsByName
+#' 
+#' Short Desc
+#' 
+#' Long Description
+#' 
+#' @return stuff
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
 getColumnsByName <- function(file, pdc, column){
   if(class(file)=="character"){
     file = opendss(file)

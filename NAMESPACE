@@ -1,14 +1,16 @@
-import(rJava, xts, stringr)
-export(initialize.dssrip,
-       opendss, 
-       OLDgetPaths,
-       getAllPaths, 
-	   getPaths, 
-       fullPathByWildcard, 
-	   pathByPartsWildcard,
-	   fullPathByRegex,
-	   pathByPartsRegex,
-	   tsc.to.xts,
-	   getTSC,
-	   getFullTSC,
-	   getColumnsByName)
+export(fullPathByRegex)
+export(fullPathByWildcard)
+export(getAllPaths)
+export(getColumnsByName)
+export(getDT)
+export(getFullDT)
+export(getFullTSC)
+export(getPaths)
+export(getTSC)
+export(initialize.dssrip)
+export(opendss)
+export(pathByPartsRegex)
+export(pathByPartsWildcard)
+export(separatePathParts)
+export(tsc.to.dt)
+export(tsc.to.xts)
