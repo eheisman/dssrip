@@ -5,12 +5,18 @@ Date: 2013-06-28
 Architecture: i386
 Author: Evan A. Heisman
 Maintainer: Evan Heisman <heisman+dssrip@gmail.com>
-Description: A package to wrap the Java API for the HEC-DSSVue program used to 
-  manage hydrologic data and make accessible in common R formats.  Note:  In 
-  order to use this package, a version of HEC-DSSVue must be installed, or 
-  other HEC product providing the appropriate .jar and shared libraries.  This 
-  code has only been tested for R 2.15 under Windows 7 and XP, and R 3.0 under
-  Windows XP.
-Depends: rJava, xts, stringr
+Description: A package to wrap the Java API for the HEC-DSSVue program used to
+    manage hydrologic data and make accessible in common R formats.  Note:  In
+    order to use this package, a version of HEC-DSSVue must be installed, or
+    other HEC product providing the appropriate .jar and shared libraries.  This
+    code has only been tested for R 2.15 under Windows 7 and XP, and R 3.0 under
+    Windows XP.
+Depends:
+    rJava,
+    xts,
+    stringr,
+    data.table
 License: MIT
 BugReports: heisman+dssripbugs@gmail.com
+Collate:
+    'dssrt.r'
