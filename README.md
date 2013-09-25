@@ -14,7 +14,9 @@ Time series import does not handle timezones well, may have issues with DSS Vue'
 
 Install Instructions
 ====================
-```devtools::install_github("dss-rip","eheisman",args="--no-multiarch")```
+```
+devtools::install_github("dss-rip","eheisman",args="--no-multiarch")
+```
 
 '--no-multiarch' may be required as an option to resolve 32-bit/64-bit compatibility issues.
 
