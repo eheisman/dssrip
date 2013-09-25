@@ -3,16 +3,20 @@
 
 #' initialize.dssrip
 #' 
-#' Short description
+#' Starts JVM with parameters required to use HEC's jar files.
 #' 
 #' Long Description
 #' 
+#' @param as.package If true, uses .jpackage instead of .jinit for better encapsulation of module. (Buggy!)
+#' @param dss_location Specify location of DSSVue libraries if not in default location.
+#' @param platform Specify platform, used in determining default DSS location.
+#' @param joptions Options string to pass to JVM.
 #' @return Nothing useful returned.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jmemory=NULL){
-  ## jmemory example: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
+initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, joptions=NULL){
+  ## joptions example: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
   
   if(is.null(platform)){
     platform = tolower(Sys.info()[["sysname"]])
@@ -36,7 +40,7 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jme
     require(rJava)
     require(stringr)
     libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
-    .jinit(classpath=jars, parameters=str_trim(paste(libs,jmemory)))
+    .jinit(classpath=jars, parameters=str_trim(paste(libs,joptions)))
     require(xts)
   } else {
     lib = paste0(dss_location, path.sep, "lib", path.sep, "javaHeclib.dll")
@@ -47,18 +51,23 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jme
 
 #' opendss
 #' 
-#' Short description
+#' Returns a DSS file object.
 #' 
-#' Long Description
+#' Returns an object from the java class 'hec.heclib.dss.HecDss' used for reading and writing to
+#' the file located at filename.  Don't forget to call myFile$close() or myFile$done() to when 
+#' finished.
 #' 
+#' @param filename Location of DSS file to open.
 #' @return stuff
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
 opendss <- function(filename){
 	dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
+  return(dssFile)
 }
 
+## Legacy function
 OLDgetPaths <- function(file, ...){
   warning("This function calls the getCatalogedPathnames function and can take some time.")
 	paths = file$getCatalogedPathnames(...)
@@ -75,11 +84,13 @@ OLDgetPaths <- function(file, ...){
 
 #' getAllPaths
 #' 
-#' get catalog to usable function
+#' Returns a list of all DSS paths in a file, useful for searching for data.
 #' 
 #' Long Description
 #' 
-#' @return stuff
+#' @param file a DSS file reference from opendss
+#' @param rebuild Set to true to force rebuilding the DSS catalog file (.dsc).
+#' @return a character vector of DSS paths in the file.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
@@ -108,16 +119,20 @@ getAllPaths <- function(file, rebuild=FALSE){
 
 #' getPaths
 #' 
-#' get catalog to usable function
+#' Allows searching DSS paths similar to getCatalogedPathnames(string searchPattern) in the Jython API.
 #' 
-#' Long Description
+#' Uses the pattern parameter to return a filtered list of paths.  The filter method is defined by the searchfunction parameter.
 #' 
+#' @param file DSS file reference
+#' @param pattern Search string
+#' @param searchfunction Filter function to use with search string
 #' @return stuff
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-getPaths <- function(dssfile, pattern=NULL, searchfunction=fullPathByWildcard){
-  paths = getAllPaths(dssfile)
+getPaths <- function(file, pattern=NULL, searchfunction=fullPathByWildcard){
+  #TODO - detect pattern type and select search function appropriately.
+  paths = getAllPaths(file)
   if(!is.null(searchfunction)){
     paths = searchfunction(paths, pattern)
   }
@@ -140,16 +155,17 @@ splitPattern <- function(pattern, to.regex=F){
   return(values)
 }
 
+## A template / placeholder filter function.
 nofilter <- function(paths, pattern){
   return(paths)
 }
 
 #' fullPathByWildcard
 #' 
-#' Short description
+#' Searches full paths by wildcard, e.g. "/A/B/C/*/*/F/"
 #' 
 #' Long Description
-#' 
+#'  
 #' @return stuff
 #' @note NOTE
 #' @author Evan Heisman
@@ -160,7 +176,7 @@ fullPathByWildcard <- function(paths, pattern){
 
 #' pathByPartsWildcard
 #' 
-#' Short description
+#' Searches path by individual parts, e.g. "A=*CREEK* C=FLOW"
 #' 
 #' Long Description
 #' 
@@ -175,7 +191,7 @@ pathByPartsWildcard <- function(paths, pattern){
 
 #' fullPathByRegex
 #' 
-#' Short description
+#' Searches full paths using regular expressions, e.g. "/A/B/C/.*/.*/F/"
 #' 
 #' Long Description
 #' 
@@ -206,7 +222,7 @@ separatePathParts <- function(paths){
 
 #' pathByPartsRegex
 #' 
-#' Short description
+#' Searches path by parts using regular expressions, e.g. "A=.*CREEK.* C=FLOW"
 #' 
 #' Long Description
 #' 
@@ -298,7 +314,7 @@ getDT <- function(file, path){
 
 #' getFullTSC
 #' 
-#' Short Desc
+#' Gets paths, converts to XTS, and merges to one time series.
 #' 
 #' Warning - does not check that all paths are the same except for D part
 #' 
@@ -316,7 +332,7 @@ getFullTSC <- function(file, paths){
 
 #' getFullDT
 #' 
-#' Short Desc
+#' Gets paths, converts to data.table, and merges to one time series.
 #' 
 #' Long Description
 #' 
@@ -337,11 +353,11 @@ getFullDT <- function(file, paths){
 
 #' getColumnsByName
 #' 
-#' Short Desc
+#' Gets a column from a paired data container by name.
 #' 
-#' Long Description
+#' Name of column must be exact or NA is returned.
 #' 
-#' @return stuff
+#' @return vector of values from column.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
@@ -353,8 +369,12 @@ getColumnsByName <- function(file, pdc, column){
     pdc = file$get(pdc)
   }
   if(class(column) != "character"){
-        return(pdc$yOrdinates[column,])
+    return(pdc$yOrdinates[column,])
   } else {
+    if(!(column %in% pdc$labels)){
+      warning(sprintf("No column named [%s] found in paired data container.", column))
+      return(NA)
+    }
     return(pdc$yOrdinates[which(pdc$labels == column),])
   }
 }
