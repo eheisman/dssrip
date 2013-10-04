@@ -5,18 +5,26 @@
 #' 
 #' Starts JVM with parameters required to use HEC's jar files.
 #' 
-#' Long Description
+#' as.package is an experimental parameter for calling this as part of the onLoad function as part
+#'   of the DSS-Rip package.  This is the prefered method for an R package, but not yet functional
+#'   for this.  The best practice is to load the DSS-Rip package, and call initialize.dssrip with
+#'   as.package=FALSE, the default value.  Either the 'nativeLibrary' parameter for .jpackage, or
+#'   as a dyn.load, would be the place to load javaHeclib.dll, but rather than distribute it with 
+#'   this R package, the user should obtain it from an install of HEC-DSSVue.  Further reasons to 
+#'   use .jinit include being able to initialize the JVM in the same manner as HEC-DSSVue would, 
+#'   adding the appropriate jars and DLLs as start up options.
 #' 
 #' @param as.package If true, uses .jpackage instead of .jinit for better encapsulation of module. (Buggy!)
 #' @param dss_location Specify location of DSSVue libraries if not in default location.
 #' @param platform Specify platform, used in determining default DSS location.
-#' @param joptions Options string to pass to JVM.
-#' @return Nothing useful returned.
+#' @param quietDSS - don't show 'Z' messages during opening, reading, and writing to a file.  Experimental.
+#' @param parameters Options string to pass to JVM.
+#' @return JVM initialization status - 0 if successful, positive for partial initialization, negative for failure.  See ?.jinit
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, joptions=NULL){
-  ## joptions example: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
+initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, quietDSS=F, verboseLib=F, parameters=NULL, ...){
+  ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
   
   if(is.null(platform)){
     platform = tolower(Sys.info()[["sysname"]])
@@ -36,12 +44,21 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jop
   }
   
   jars = paste0(dss_location, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
+  
   if(!as.package){
+    if(version$arch=="x86_64" & Sys.getenv("JAVA_HOME")!="")
+      Sys.setenv(JAVA_HOME="") ## rJava on 64-bit R has problems when JAVA_HOME is set and it can't find the JRE.
     require(rJava)
     require(stringr)
-    libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
-    .jinit(classpath=jars, parameters=str_trim(paste(libs,joptions)))
     require(xts)
+    if(quietDSS){
+      zMessagesOption = "-Ddebug=true"
+      parameters = str_trim(paste(parameters, zMessagesOption))
+    } 
+    libs = paste0("-Djava.library.path=", dss_location, "lib", path.sep)
+    if(verboseLib) cat(str_trim(paste(libs,parameters))); cat("\n")
+    return(.jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...))
+    
   } else {
     lib = paste0(dss_location, path.sep, "lib", path.sep, "javaHeclib.dll")
     dyn.load(lib)
@@ -49,16 +66,50 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, jop
   }
 }
 
+test.quiet <- function(){
+  initialize.dssrip(quietDSS=T, verboseLib=T, force.init=T)
+  foobar = opendss("./extdata/test.dss")
+}
+
+
+## useful function for indexing by water year
+
+#' @name wy
+#' @aliases wateryear
+#' @title Index by water year.
+#' @param t
+#' @return integer of water year
+#' @note aliased to 'wateryear'
+#' Works similar to 'year' function on POSIXt classes
+#' @rdname wy
+#' @export
+wy <-  function(t) year(t) + ifelse(month(t) >= 10, 1, 0)
+#' @rdname wy
+#' @export
+wateryear = wy
+
+#' @name wymonth
+#' @title Month of water year
+#' @param t
+#' @return integer of month in water year (OCT = 1, SEP = 12)
+#' @note aliased to 'wateryear'
+#' Works similar to 'year' function on POSIXt classes
+#' @export
+wymonth = function(t) (month(t) + 2) %% 12 + 1
+#' @export
+wymonth.abb = month.abb[c(10:12,1:9)]
+
+
 #' opendss
 #' 
 #' Returns a DSS file object.
 #' 
 #' Returns an object from the java class 'hec.heclib.dss.HecDss' used for reading and writing to
-#' the file located at filename.  Don't forget to call myFile$close() or myFile$done() to when 
+#' the file located at filename.  Don't forget to call myFile$close() or myFile$done() when 
 #' finished.
 #' 
 #' @param filename Location of DSS file to open.
-#' @return stuff
+#' @return 'hec.heclib.dss.HecDss' object of DSS file at filename
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
@@ -67,9 +118,11 @@ opendss <- function(filename){
   return(dssFile)
 }
 
-## Legacy function
+## Deprecated function - DO NOT USE.
 OLDgetPaths <- function(file, ...){
   warning("This function calls the getCatalogedPathnames function and can take some time.")
+  warning("OLDgetPaths is deprecated.  Please replace.")
+
 	paths = file$getCatalogedPathnames(...)
 	n = paths$size()
   if(n==0){
@@ -119,14 +172,15 @@ getAllPaths <- function(file, rebuild=FALSE){
 
 #' getPaths
 #' 
-#' Allows searching DSS paths similar to getCatalogedPathnames(string searchPattern) in the Jython API.
+#' Allows searching DSS paths similar to getCatalogedPathnames(searchPattern) in the Jython API.
 #' 
-#' Uses the pattern parameter to return a filtered list of paths.  The filter method is defined by the searchfunction parameter.
+#' Uses the pattern parameter to return a filtered list of paths.  The filter method is defined by 
+#' the searchfunction parameter.
 #' 
 #' @param file DSS file reference
 #' @param pattern Search string
 #' @param searchfunction Filter function to use with search string
-#' @return stuff
+#' @return character vector of paths matching filter criteria.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
@@ -209,7 +263,7 @@ fullPathByRegex <- function(paths, pattern){
 #' 
 #' Long Description
 #' 
-#' @return stuff
+#' @return data frame consisting of split path parts and full paths.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
@@ -254,7 +308,7 @@ treesearch <- function(paths, pattern){
 #' 
 #' Long Description
 #' 
-#' @return stuff
+#' @return xts object from times and values in TSC.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
@@ -272,7 +326,7 @@ tsc.to.xts <- function(tsc){
 #' 
 #' Long Description
 #' 
-#' @return stuff
+#' @return data.table object from times andvalues in TSC.
 #' @note NOTE
 #' @author Cameron Bracken
 #' @export 
@@ -280,17 +334,17 @@ tsc.to.dt <- function(tsc){
   require(data.table)
   times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
   values = tsc$values
-  out = data.table(datetime=times,value=values)
+  out = data.table(datetime=times,value=values,keyby="datetime")
   return(out)
 }
 
 #' getTSC
 #' 
-#' Short Desc
+#' Skips intermediate step of getting TimeSeriesContainer object.
 #' 
 #' Long Description
 #' 
-#' @return stuff
+#' @return xts from time series located at path in file.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
@@ -298,7 +352,7 @@ getTSC <- function(file, path){
   return(tsc.to.xts(file$get(path)))
 }
 
-#' detDT
+#' getDT
 #' 
 #' short desc
 #' 
@@ -318,16 +372,16 @@ getDT <- function(file, path){
 #' 
 #' Warning - does not check that all paths are the same except for D part
 #' 
-#' @return stuff
+#' @return merged xts of all times and values in time series matching paths.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
 getFullTSC <- function(file, paths){
   tscList = list()
-	for(p in paths){
+  for(p in paths){
     tscList[[p]] = getTSC(file, p)
-	}
-	return(do.call(rbind.xts, tscList))
+  }
+  return(do.call(rbind.xts, tscList))
 }
 
 #' getFullDT
@@ -336,7 +390,7 @@ getFullTSC <- function(file, paths){
 #' 
 #' Long Description
 #' 
-#' @return stuff
+#' @return merged data.tame of all times and values in the time series matching paths.
 #' @note NOTE
 #' @author Cameron Bracken
 #' @export 

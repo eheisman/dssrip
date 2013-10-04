@@ -1,5 +1,13 @@
-DSS-Rip plan
+TODO List:
+==========
+- Implement a 'safe' HecDss$get() method that handles a non-existing path more gracefully.
+- Implement write methods for TSCs and PDCs.
 
+
+
+Old DSS-Rip plan:
+=================
+this would be an idealized replacement for the Java methods.
 
 dssfile object
   catalog indexing - faster searching.
@@ -17,7 +25,3 @@ rCollectionContainer
 
 rTextContainer
   allows storing a string into a DSS database as a readme or to provide other metdata.
-
-
-Problems to solve / issues to fix:
-  Matching times from hecTime objects with XTS timestamps.
