@@ -52,7 +52,7 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, qui
     require(stringr)
     require(xts)
     if(quietDSS){
-      zMessagesOption = "-Ddebug=true"
+      zMessagesOption = "-Ddebug=false"
       parameters = str_trim(paste(parameters, zMessagesOption))
     } 
     libs = paste0("-Djava.library.path=", dss_location, "lib", path.sep)
@@ -313,11 +313,11 @@ treesearch <- function(paths, pattern){
 #' @author Evan Heisman
 #' @export 
 tsc.to.xts <- function(tsc){
-	times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
-	values = tsc$values
+  times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
+  values = tsc$values
   out = xts(values, times)
   colnames(out) = tsc$parameter
-	return(out)
+  return(out)
 }
 
 #' tsc.to.dt
@@ -334,7 +334,9 @@ tsc.to.dt <- function(tsc){
   require(data.table)
   times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
   values = tsc$values
-  out = data.table(datetime=times,value=values,keyby="datetime")
+  ## TODO - set datetime as key
+  out = data.table(datetime=times,value=values)
+  setkey(out, "datetime")
   return(out)
 }
 
