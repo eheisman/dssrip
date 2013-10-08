@@ -9,7 +9,8 @@ Provided under MIT license without warranty.
 
 Known Issues
 ============
-Time series import does not handle timezones well, may have issues with DSS Vue's interpretation of 24:00 hours versus the XTS interpretation.  Check your data for off-by-one type errors!
+- Time series import does not handle timezones well, may have issues with DSS Vue's interpretation of 24:00 hours versus the XTS interpretation.  Check your data for off-by-one type errors!
+- data.table and rJava both imported and have a naming conflict on the ```J()``` function.  At the moment the rJava version masks the data.table version.
 
 
 Install Instructions
