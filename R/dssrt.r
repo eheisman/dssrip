@@ -23,8 +23,12 @@
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, quietDSS=F, verboseLib=F, parameters=NULL, ...){
+initialize.dssrip = function(pkgname=NULL, lib.loc,
+                             dss_location=NULL, platform=NULL, quietDSS=F, verboseLib=F, parameters=NULL, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
+  
+  ## TODO:  Add check if DSSRip is already initialized, exit function and return nothing 
+  ##        if not "force.reinit=T" with warning message
   
   if(is.null(platform)){
     platform = tolower(Sys.info()[["sysname"]])
@@ -45,7 +49,7 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, qui
   
   jars = paste0(dss_location, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
   
-  if(!as.package){
+  if(is.null(pkgname)){ ## Loading outside of onLoad function
     if(version$arch=="x86_64" & Sys.getenv("JAVA_HOME")!="")
       Sys.setenv(JAVA_HOME="") ## rJava on 64-bit R has problems when JAVA_HOME is set and it can't find the JRE.
     require(rJava)
@@ -58,11 +62,15 @@ initialize.dssrip = function(as.package=F, dss_location=NULL, platform=NULL, qui
     libs = paste0("-Djava.library.path=", dss_location, "lib", path.sep)
     if(verboseLib) cat(str_trim(paste(libs,parameters))); cat("\n")
     return(.jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...))
-    
   } else {
-    lib = paste0(dss_location, path.sep, "lib", path.sep, "javaHeclib.dll")
-    dyn.load(lib)
-    .jpackage(pkgname, morePaths=jars)
+    libdir = paste0(dss_location, "lib", path.sep)
+    #dyn.load(lib)
+    .jpackage(pkgname, lib.loc, morePaths=jars)
+    ## Add javaHeclib.dll to loaded libraries.
+    #lib = paste0(libdir, "javaHeclib.dll")
+    #.jcall("java/lang/System", returnSig='V', method="load", lib)
+    Sys.setenv(PATH=paste0(Sys.getenv("PATH"), ";", dss_location, ";", libdir))
+    .jcall("java/lang/System", returnSig='V', method="loadLibrary", "javaHeclib")
   }
 }
 

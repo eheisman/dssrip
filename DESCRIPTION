@@ -18,3 +18,4 @@ License: MIT
 BugReports: heisman+dssripbugs@gmail.com
 Collate:
     'dssrt.r'
+    'onLoad.R'
