@@ -264,7 +264,9 @@ tsc.to.dt <- function(tsc){
   require(data.table)
   times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
   values = tsc$values
-  out = data.table(datetime=times,value=values)
+  units = tsc$units
+  if(length(values)==0)units = character(0)
+  out = data.table(datetime=times,value=values,units=units)
   return(out)
 }
 
