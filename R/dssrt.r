@@ -55,10 +55,6 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     require(rJava)
     require(stringr)
     require(xts)
-    if(quietDSS){
-      zMessagesOption = "-Ddebug=false"
-      parameters = str_trim(paste(parameters, zMessagesOption))
-    } 
     libs = paste0("-Djava.library.path=", dss_location, "lib", path.sep)
     if(verboseLib) cat(str_trim(paste(libs,parameters))); cat("\n")
     return(.jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...))
@@ -71,6 +67,13 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     #.jcall("java/lang/System", returnSig='V', method="load", lib)
     Sys.setenv(PATH=paste0(Sys.getenv("PATH"), ";", dss_location, ";", libdir))
     .jcall("java/lang/System", returnSig='V', method="loadLibrary", "javaHeclib")
+  }
+  if(quietDSS){
+    ## Neither works
+    ## TODO:  Try this with a temporary file instead of NULL
+    #.jcall("java/lang/System", returnSig='V', method="setOut", .jnull())
+    ## See heclib programmers manual for this trick.
+    #.jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLVL', ' ', 0)
   }
 }
 
