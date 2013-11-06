@@ -63,9 +63,10 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     #dyn.load(lib)
     .jpackage(pkgname, lib.loc, morePaths=jars)
     ## Add javaHeclib.dll to loaded libraries.
-    #lib = paste0(libdir, "javaHeclib.dll")
     #.jcall("java/lang/System", returnSig='V', method="load", lib)
     Sys.setenv(PATH=paste0(Sys.getenv("PATH"), ";", dss_location, ";", libdir))
+    lib = paste0(libdir, "javaHeclib.dll")
+    .jcall("java/lang/System", returnSig='V', method="load", lib)
     .jcall("java/lang/System", returnSig='V', method="loadLibrary", "javaHeclib")
   }
   if(quietDSS){
