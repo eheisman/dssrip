@@ -1,9 +1,9 @@
 ## DSS - R interface project
 ## Evan Heisman
 
-#' initialize.dssrip
-#' 
-#' Starts JVM with parameters required to use HEC's jar files.
+#' initialize.dssrip Starts JVM with configuration for DSS-Vue's jar and dll files.
+#'
+#'Starts JVM with parameters required to use HEC's jar files.
 #' 
 #' as.package is an experimental parameter for calling this as part of the onLoad function as part
 #'   of the DSS-Rip package.  This is the prefered method for an R package, but not yet functional
@@ -86,7 +86,7 @@ test.quiet <- function(){
 
 ## useful function for indexing by water year
 
-#' @name wy
+#' @name wy Gets water year (Oct to Sept) from POSIXt object.
 #' @aliases wateryear
 #' @title Index by water year.
 #' @param t
@@ -100,7 +100,7 @@ wy <-  function(t) year(t) + ifelse(month(t) >= 10, 1, 0)
 #' @export
 wateryear = wy
 
-#' @name wymonth
+#' @name wymonth Get's the month in the water year (Oct=1, Sept=12)
 #' @title Month of water year
 #' @param t
 #' @return integer of month in water year (OCT = 1, SEP = 12)
@@ -108,11 +108,12 @@ wateryear = wy
 #' Works similar to 'year' function on POSIXt classes
 #' @export
 wymonth = function(t) (month(t) + 2) %% 12 + 1
+
 #' @export
 wymonth.abb = month.abb[c(10:12,1:9)]
 
 
-#' opendss
+#' opendss Opens a DSS file.
 #' 
 #' Returns a DSS file object.
 #' 
@@ -147,7 +148,7 @@ OLDgetPaths <- function(file, ...){
 	return(myList)
 }
 
-#' getAllPaths
+#' getAllPaths Returns all paths in DSS file.
 #' 
 #' Returns a list of all DSS paths in a file, useful for searching for data.
 #' 
@@ -182,7 +183,7 @@ getAllPaths <- function(file, rebuild=FALSE){
   return(paths)
 }
 
-#' getPaths
+#' getPaths Search DSS paths by filter.
 #' 
 #' Allows searching DSS paths similar to getCatalogedPathnames(searchPattern) in the Jython API.
 #' 
@@ -226,7 +227,7 @@ nofilter <- function(paths, pattern){
   return(paths)
 }
 
-#' fullPathByWildcard
+#' fullPathByWildcard Search paths by wildcard.
 #' 
 #' Searches full paths by wildcard, e.g. "/A/B/C/*/*/F/"
 #' 
@@ -240,7 +241,7 @@ fullPathByWildcard <- function(paths, pattern){
   return(fullPathByRegex(paths, glob2rx(pattern)))
 }
 
-#' pathByPartsWildcard
+#' pathByPartsWildcard Search paths by parts, using wildcards.
 #' 
 #' Searches path by individual parts, e.g. "A=*CREEK* C=FLOW"
 #' 
@@ -255,7 +256,7 @@ pathByPartsWildcard <- function(paths, pattern){
   return(pathByPartsRegex(paths, pattern.parts=splitPattern(pattern, to.regex=T)))
 }
 
-#' fullPathByRegex
+#' fullPathByRegex Search full paths with regex.
 #' 
 #' Searches full paths using regular expressions, e.g. "/A/B/C/.*/.*/F/"
 #' 
@@ -269,7 +270,7 @@ fullPathByRegex <- function(paths, pattern){
   return(paths[grepl(pattern, paths)])
 }
 
-#' separatePathParts
+#' separatePathParts Separates path parts into dataframe.
 #' 
 #' useful function for writing filters
 #' 
@@ -286,7 +287,7 @@ separatePathParts <- function(paths){
   return(parts.df)
 }
 
-#' pathByPartsRegex
+#' pathByPartsRegex Search path by parts using regex.
 #' 
 #' Searches path by parts using regular expressions, e.g. "A=.*CREEK.* C=FLOW"
 #' 
@@ -314,7 +315,7 @@ treesearch <- function(paths, pattern){
 }
 
 
-#' tsc.to.xts
+#' tsc.to.xts Converts Java TimeSeriesContainer objects into XTS time series objects.
 #' 
 #' convert time series container to XTS
 #' 
@@ -332,7 +333,7 @@ tsc.to.xts <- function(tsc){
   return(out)
 }
 
-#' tsc.to.dt
+#' tsc.to.dt Converts Java TimeSeriesContainer objects to data.table objects.
 #' 
 #' convert time series container to data.table
 #' 
@@ -353,7 +354,7 @@ tsc.to.dt <- function(tsc){
   return(out)
 }
 
-#' getTSC
+#' getTSC Get a TSC from a file and pathname as a XTS.
 #' 
 #' Skips intermediate step of getting TimeSeriesContainer object.
 #' 
@@ -367,7 +368,7 @@ getTSC <- function(file, path){
   return(tsc.to.xts(file$get(path)))
 }
 
-#' getDT
+#' getDT Get a TSC from a file and pathname as a data.table
 #' 
 #' short desc
 #' 
@@ -381,7 +382,7 @@ getDT <- function(file, path){
   return(tsc.to.dt(file$get(path)))
 }
 
-#' getFullTSC
+#' getFullTSC Get a full TSC, ignoring date parameters.
 #' 
 #' Gets paths, converts to XTS, and merges to one time series.
 #' 
@@ -399,7 +400,7 @@ getFullTSC <- function(file, paths){
   return(do.call(rbind.xts, tscList))
 }
 
-#' getFullDT
+#' getFullDT Get a full TSC as data.table, ignoring date parameters.
 #' 
 #' Gets paths, converts to data.table, and merges to one time series.
 #' 
@@ -420,7 +421,7 @@ getFullDT <- function(file, paths){
 
 ## PairedDataContainer functions
 
-#' getColumnsByName
+#' getColumnsByName Get a column from a PairedDataContainer object.
 #' 
 #' Gets a column from a paired data container by name.
 #' 
