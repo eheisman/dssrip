@@ -24,7 +24,7 @@
 #' @author Evan Heisman
 #' @export 
 initialize.dssrip = function(pkgname=NULL, lib.loc,
-                             dss_location=NULL, platform=NULL, quietDSS=F, verboseLib=F, parameters=NULL, ...){
+                             dss_location=getOption("dss_location"), platform=NULL, quietDSS=F, verboseLib=F, parameters=NULL, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
   
   ## TODO:  Add check if DSSRip is already initialized, exit function and return nothing 
