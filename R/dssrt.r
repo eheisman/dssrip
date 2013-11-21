@@ -24,7 +24,9 @@
 #' @author Evan Heisman
 #' @export 
 initialize.dssrip = function(pkgname=NULL, lib.loc,
-                             dss_location=getOption("dss_location"), platform=NULL, quietDSS=F, verboseLib=F, parameters=NULL, ...){
+                             dss_location=getOption("dss_location"), 
+                             dss_jre=getOption("dss_jre_location"),
+                             platform=NULL, quietDSS=F, verboseLib=F, parameters=NULL, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
   
   ## TODO:  Add check if DSSRip is already initialized, exit function and return nothing 
@@ -39,25 +41,42 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     path.sep = "\\"
     library.ext = ".dll"
   }
+  
+  ## Set JRE location
+  if(!is.null(dss_jre)){
+    Sys.setenv(JAVA_HOME=dss_jre)
+  } #else {
+  #   if(version$arch=="x86_64"){
+  #     Sys.setenv(JAVA_HOME="")
+  #   }
+  # }
+  if(verboseLib) cat(sprintf("JRE location is %s\n", Sys.getenv("JAVA_HOME")))
+  
+  ## Set DSS location
   if(is.null(dss_location)){
     if(platform == "windows"){
-      dss_location = paste0(Sys.getenv("ProgramFiles(x86)"), path.sep, "HEC", path.sep, "HEC-DSSVue", path.sep)
+      dss_location = paste0(Sys.getenv("ProgramFiles(x86)"), path.sep, "HEC", path.sep, "HEC-DSSVue")
     } else {
       dss_location = Sys.getenv("DSS_HOME")
     }
   }
+  if(verboseLib) cat(sprintf("DSS Location is %s\n", dss_location))
   
-  jars = paste0(dss_location, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
+  jars = paste0(dss_location, path.sep, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
   
   if(is.null(pkgname)){ ## Loading outside of onLoad function
-    if(version$arch=="x86_64" & Sys.getenv("JAVA_HOME")!="")
-      Sys.setenv(JAVA_HOME="") ## rJava on 64-bit R has problems when JAVA_HOME is set and it can't find the JRE.
     require(rJava)
     require(stringr)
     require(xts)
-    libs = paste0("-Djava.library.path=", dss_location, "lib", path.sep)
+    libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
     if(verboseLib) cat(str_trim(paste(libs,parameters))); cat("\n")
-    return(.jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...))
+    
+    .jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...)
+    .jaddClassPath(jars)
+    for(jpath in .jclassPath()){
+      cat(jpath)
+      cat("\n")
+    }
   } else {
     libdir = paste0(dss_location, "lib", path.sep)
     #dyn.load(lib)
