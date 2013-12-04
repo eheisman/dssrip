@@ -63,3 +63,5 @@ R/dssrip
 ##############
 # DSS catalogs
 *.dsc
+/.README.md.html
+/.project
