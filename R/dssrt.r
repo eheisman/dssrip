@@ -74,9 +74,11 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     
     .jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...)
     #.jaddClassPath(jars)
-    for(jpath in .jclassPath()){
-      cat(jpath)
-      cat("\n")
+    if(verboseLib){
+      for(jpath in .jclassPath()){
+        cat(jpath)
+        cat("\n")
+      }
     }
   } else {
     libdir = paste0(dss_location, "lib", path.sep)
