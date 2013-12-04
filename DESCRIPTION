@@ -19,3 +19,4 @@ BugReports: heisman+dssripbugs@gmail.com
 Collate:
     'dssrt.r'
     'onLoad.R'
+	'hydrotools.R'

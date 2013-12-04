@@ -84,35 +84,6 @@ test.quiet <- function(){
 }
 
 
-## useful function for indexing by water year
-
-#' @name wy Gets water year (Oct to Sept) from POSIXt object.
-#' @aliases wateryear
-#' @title Index by water year.
-#' @param t
-#' @return integer of water year
-#' @note aliased to 'wateryear'
-#' Works similar to 'year' function on POSIXt classes
-#' @rdname wy
-#' @export
-wy <-  function(t) year(t) + ifelse(month(t) >= 10, 1, 0)
-#' @rdname wy
-#' @export
-wateryear = wy
-
-#' @name wymonth Get's the month in the water year (Oct=1, Sept=12)
-#' @title Month of water year
-#' @param t
-#' @return integer of month in water year (OCT = 1, SEP = 12)
-#' @note aliased to 'wateryear'
-#' Works similar to 'year' function on POSIXt classes
-#' @export
-wymonth = function(t) (month(t) + 2) %% 12 + 1
-
-#' @export
-wymonth.abb = month.abb[c(10:12,1:9)]
-
-
 #' opendss Opens a DSS file.
 #' 
 #' Returns a DSS file object.
