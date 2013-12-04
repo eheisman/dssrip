@@ -91,13 +91,13 @@ weibullProbs <- function(Qs, exceedance=T){
   return(abs(exceedance - rank(Qs, ties="first") / (length(Qs)+1)))
 }
 
-probBreaks <- function(level=3, lines=c(1,2,5), labels=c(1), invert=TRUE){
+probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE){
   probBreaks = NULL
   probLabels = NULL
   level = -1
   
   # TODO - assign maximum level from max(log10(weibullProbs(Q)))
-  while(level >= -level){
+  while(level >= -maxLevel){
     p = 10^level*lines
     p = c(p, 1-p)
     if(invert) p = 1 - p
