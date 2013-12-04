@@ -52,7 +52,7 @@ excelR2 = function(x, y) cor(x,y, method="pearson")**2
 # two parameters assumes x1 and x2 are modeled versus fitted
 rmse = function(x1, x2=NULL){
   if(!is.null(x2)){
-    x1 = x1 = x2
+    x1 = x1 - x2
   }
   return(sqrt(mean((x1)**2)))
 }
@@ -138,7 +138,6 @@ ggFrequencyCurveExample <- function(peaks, groups=NULL, geom=geom_point,
           breaks=xbrks, labels=names(xbrks)) +
       scale_y_continuous(name=ylabel, trans="log10", 
           breaks=ybrks, labels=names(ybrks)) +
-      scale_color_manual(name="", values=cbbPal(length(unique(freqDF$GRP)))) +
       expand_limits(x=range(xbrks), y=range(ybrks))
   return(plt)
 }
