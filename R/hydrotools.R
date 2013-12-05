@@ -91,7 +91,7 @@ weibullProbs <- function(Qs, exceedance=T){
   return(abs(exceedance - rank(Qs, ties="first") / (length(Qs)+1)))
 }
 
-probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE){
+probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.percent=TRUE){
   probBreaks = NULL
   probLabels = NULL
   level = -1
@@ -101,43 +101,16 @@ probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE){
     p = 10^level*lines
     p = c(p, 1-p)
     if(invert) p = 1 - p
-    labs = ifelse(c(lines, lines) %in% labels, paste0(100*p, "%"), "")
-    labs = ifelse(p==0.5, "50%", labs)
+    if(as.percent){
+      labs = ifelse(c(lines, lines) %in% labels, paste0(as.character(100*p), "%"), "")
+      labs = ifelse(p==0.5, "50%", labs) 
+    } else {
+      labs = ifelse(c(lines, lines) %in% labels, as.character(p), "")
+    }
     probBreaks = c(probBreaks, p)
     probLabels = c(probLabels, labs)
     level = level - 1
   }
   names(probBreaks) = probLabels
   return(probBreaks)
-}
-
-## this does not work.
-ggFrequencyCurveExample <- function(peaks, groups=NULL, geom=geom_point, 
-    ylabel="Flow", xlabel="Probability [%]", pltTheme=NULL){
-  
-  if(is.null(groups)){
-    groups = rep("Main", length(peaks))
-  }
-  if(!is.factor(groups)){
-    groups = as.factor(groups)
-  }
-  
-  freqDF = data.frame(Q=peaks, GRP=groups)
-  freqDF = ddply(freqDF, "GRP", mutate, PROB=1-weibullProbs(freqDF$Q))
-  
-  xbrks = probBreaks(freqDF)
-  ybrks = flowBreaks(freqDF)
-  
-  if(is.null(pltTheme)){
-    pltTheme = theme_bw() + theme(legend.position="bottom", panel.grid.minor=element_blank())
-  }
-  
-  plt = ggplot(freqDF) + pltTheme + 
-      geom(aes(x=PROB, y=Q, group=GRP, color=GRP)) +
-      scale_x_continuous(name=xlabel, trans=probability_trans("norm"),
-          breaks=xbrks, labels=names(xbrks)) +
-      scale_y_continuous(name=ylabel, trans="log10", 
-          breaks=ybrks, labels=names(ybrks)) +
-      expand_limits(x=range(xbrks), y=range(ybrks))
-  return(plt)
 }
