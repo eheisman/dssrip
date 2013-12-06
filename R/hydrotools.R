@@ -100,7 +100,6 @@ probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.
   while(level >= -maxLevel){
     p = 10^level*lines
     p = c(p, 1-p)
-    if(invert) p = 1 - p
     if(as.percent){
       labs = ifelse(c(lines, lines) %in% labels, paste0(as.character(100*p), "%"), "")
       labs = ifelse(p==0.5, "50%", labs) 
@@ -110,6 +109,9 @@ probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.
     probBreaks = c(probBreaks, p)
     probLabels = c(probLabels, labs)
     level = level - 1
+  }
+  if(invert){
+    probBreaks = 1-probBreaks
   }
   names(probBreaks) = probLabels
   return(probBreaks)
