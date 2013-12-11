@@ -50,7 +50,7 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   #     Sys.setenv(JAVA_HOME="")
   #   }
   # }
-  if(verboseLib) cat(sprintf("JRE location is %s\n", Sys.getenv("JAVA_HOME")))
+  if(verboseLib) packageStartupMessage(sprintf("JRE location is %s\n", Sys.getenv("JAVA_HOME")))
   
   ## Set DSS location
   if(is.null(dss_location)){
@@ -60,7 +60,7 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
       dss_location = Sys.getenv("DSS_HOME")
     }
   }
-  if(verboseLib) cat(sprintf("DSS Location is %s\n", dss_location))
+  if(verboseLib) packageStartupMessage(sprintf("DSS Location is %s\n", dss_location))
   
   jars = paste0(dss_location, path.sep, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
   require(rJava)
@@ -70,14 +70,13 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     require(stringr)
     require(xts)
     libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
-    if(verboseLib) cat(str_trim(paste(libs,parameters))); cat("\n")
+    if(verboseLib) packageStartupMessage(str_trim(paste(libs,parameters)))
     
     .jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...)
     #.jaddClassPath(jars)
     if(verboseLib){
       for(jpath in .jclassPath()){
-        cat(jpath)
-        cat("\n")
+        packageStartupMessage(jpath)
       }
     }
   } else {
