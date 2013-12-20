@@ -87,11 +87,12 @@ flowBreaks <- function(Q, labels=c(1,2,3,5,7)){
   return(ybreaks)
 }
 
-weibullProbs <- function(Qs, exceedance=T){
-  return(abs(exceedance - rank(Qs, ties="first") / (length(Qs)+1)))
+weibullProbs <- function(Qs, exceedance=FALSE, as.points=FALSE){
+  ## Ties.method as 'min' if diplsaying points, "first" if displaying as a line.  Series of points with same value having different probabilities doesn't make sense.
+  return(abs(exceedance - rank(Qs, ties.method=ifelse(as.points, "min", "first"), na.last=FALSE) / (length(Qs)+1)))
 }
 
-probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.percent=TRUE){
+probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.percent=TRUE, byPeriod=FALSE, periodSuffix=" yr"){
   probBreaks = NULL
   probLabels = NULL
   level = -1
@@ -105,6 +106,12 @@ probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.
       labs = ifelse(p==0.5, "50%", labs) 
     } else {
       labs = ifelse(c(lines, lines) %in% labels, as.character(p), "")
+    }
+    if(byPeriod){
+      warning("Generating breaks with reoccurance periods shown - You shouldn't be using '-year' events!")
+      period = 1 / p
+      period = paste0(period, periodSuffix)
+      labs = ifelse(p <= 0.5 & labs != "", paste(labs, period, sep="\n"), labs)
     }
     probBreaks = c(probBreaks, p)
     probLabels = c(probLabels, labs)
