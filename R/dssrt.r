@@ -91,10 +91,14 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     .jcall("java/lang/System", returnSig='V', method="loadLibrary", "javaHeclib")
   }
   if(quietDSS){
-    ## Neither works
+    ## None of the below work
     ## TODO:  Try this with a temporary file instead of NULL
+    #opt 1
     #.jcall("java/lang/System", returnSig='V', method="setOut", .jnull())
-    ## See heclib programmers manual for this trick.
+    #opt 2
+    #nullPrintStream = .jnew("java/lang/System/PrintStream", paste0(dss_location, path.sep, "dssrip_temp.txt"))
+    #.jcall("java/lang/System", returnSig='V', method="setOut", nullPrintStream)
+    #opt 3: See heclib programmers manual for this trick.
     #.jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLVL', ' ', 0)
   }
 }
@@ -306,6 +310,9 @@ treesearch <- function(paths, pattern){
 }
 
 
+sigConversions = list(boolean="Z", byte="B", char="C", 
+                      short="T", void="V", int="I", 
+                      long="J", float="F", double="D")
 #' tsc.to.xts Converts Java TimeSeriesContainer objects into XTS time series objects.
 #' 
 #' convert time series container to XTS
@@ -316,11 +323,41 @@ treesearch <- function(paths, pattern){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-tsc.to.xts <- function(tsc){
-  times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
-  values = tsc$values
-  out = xts(values, times)
-  colnames(out) = tsc$parameter
+tsc.to.xts <- function(tsc, colnamesSource="parameter"){
+  require(stringr)
+  require(plyr)
+  fields = ldply(.jfields(tsc), function(x) data.frame(FULLNAME=x, 
+                                                       SHORTNAME=last(str_split(x, fixed("."))[[1]]), 
+                                                       SIGNATURE=str_split(x, fixed(" "))[[1]][2], stringsAsFactors=FALSE))
+  fields$SIGNATURE = llply(fields$SIGNATURE, function(x){
+    out = str_replace_all(x, "\\[\\]", "")
+    if(out %in% names(sigConversions)){
+      out = sigConversions[[out]]
+    } else {
+      out = paste0("L", str_replace_all(out, fixed("."), "/"), ";")
+    }
+    ## If vector, add [
+    if(grepl(fixed("\\[\\]"), x)){
+      out = paste0("[", out)
+    }
+    return(out)
+  })
+  metadata = dlply(fields, "SHORTNAME", function(df){
+    #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
+    if(df$SHORTNAME %in% c("values", "times", "modified", "quality")) {
+      return()
+    }
+    val = .jfield(tsc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE))
+    if(.jnull() == val){
+      return()
+    }
+    return(val)
+  })
+  #print(metadata)
+  metadata$x = tsc$values
+  metadata$order.by = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
+  out = do.call(xts, metadata)
+  colnames(out) = metadata[[colnamesSource]]
   return(out)
 }
 
