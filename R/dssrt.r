@@ -186,17 +186,33 @@ getAllPaths <- function(file, rebuild=FALSE){
 #' the searchfunction parameter.
 #' 
 #' @param file DSS file reference
-#' @param pattern Search string
-#' @param searchfunction Filter function to use with search string
+#' @param searchString Search string
+#' @param searchFunction Filter function to use with search string
 #' @return character vector of paths matching filter criteria.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-getPaths <- function(file, pattern=NULL, searchfunction=fullPathByWildcard){
-  #TODO - detect pattern type and select search function appropriately.
+getPaths <- function(file, searchString="/*/*/*/*/*/*/", searchfunction=NULL, pattern=searchString, searchFunction=searchfunction, useRegex=FALSE){
+  searchString = str_trim(searchString)
+  if(is.null(searchFunction)){
+    if(grepl(pattern=fixed("="), x=searchString)){
+      searchFunction = pathByPartsWildcard
+      if(useRegex){
+        searchFunction = pathByPartsRegex
+      }
+    } else if(grepl(pattern="^/.*/.*/.*/.*/.*/.*/$", x=searchString)) {
+      searchFunction = fullPathByWildcard
+      if(useRegex){
+        searchFunction = fullPathByRegex
+      }
+    } else{
+      warning("No search function specified and could not be automatically selected.")
+      searchFunction = nofilter
+    }
+  }
   paths = getAllPaths(file)
-  if(!is.null(searchfunction)){
-    paths = searchfunction(paths, pattern)
+  if(!is.null(searchFunction)){
+    paths = searchFunction(paths, searchString)
   }
   return(paths)
 }
