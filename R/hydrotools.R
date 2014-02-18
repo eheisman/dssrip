@@ -45,16 +45,16 @@ wymonth.abb = month.abb[c(10:12,1:9)]
 ###################
 
 ## For comparisons with data from Excel
-excelR2 = function(x, y) cor(x,y, method="pearson")**2
+excelR2 = function(x.obs, x.model) cor(x.obs, x.model, method="pearson")**2
 
 ## RMSE function, checked
 # one parameter assumes x1 is residuals,
 # two parameters assumes x1 and x2 are modeled versus fitted
-rmse = function(x1, x2=NULL){
-  if(!is.null(x2)){
-    x1 = x1 - x2
+rmse = function(x.obs, x.model=NULL){
+  if(!is.null(x.obs)){
+    x.obs = x.obs - x.model
   }
-  return(sqrt(mean((x1)**2)))
+  return(sqrt(mean((x.obs)**2)))
 }
 
 ## Nash-Sutcliffe measure

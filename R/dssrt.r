@@ -365,14 +365,12 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter"){
     }
     val = .jfield(tsc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE))
     if(.jnull() == val){
-      return()
+      return(NA)
     }
     return(val)
   })
-  #print(metadata)
-  metadata$x = tsc$values
-  metadata$order.by = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
-  out = do.call(xts, metadata)
+  metadata = metadata[!(names(metadata) %in% c("values", "times", "modified", "quality"))]
+  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60, origin="1899-12-31 00:00"), dssMetadata= as.data.frame(metadata))
   colnames(out) = metadata[[colnamesSource]]
   return(out)
 }
@@ -408,8 +406,8 @@ tsc.to.dt <- function(tsc){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-getTSC <- function(file, path){
-  return(tsc.to.xts(file$get(path)))
+getTSC <- function(file, path, ...){
+  return(tsc.to.xts(file$get(path), ...))
 }
 
 #' getDT Get a TSC from a file and pathname as a data.table
@@ -436,12 +434,14 @@ getDT <- function(file, path){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-getFullTSC <- function(file, paths){
+getFullTSC <- function(file, paths, ...){
   tscList = list()
   for(p in paths){
-    tscList[[p]] = getTSC(file, p)
+    tscList[[p]] = getTSC(file, p, ...)
   }
-  return(do.call(rbind.xts, tscList))
+  xtsOut = do.call(rbind.xts, tscList)
+  xtsAttributes(xtsOut) = list(dssMetadata=do.call(rbind, lapply(tscList, function(x) attr(x, "dssMetadata"))))
+  return(xtsOut)
 }
 
 #' getFullDT Get a full TSC as data.table, ignoring date parameters.
