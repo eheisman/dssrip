@@ -26,8 +26,11 @@ From the returned ```hecdss``` object, either accompanying functions can be used
 Several convenience functions for reading timeseries and paried data containers have been added, a brief summary presented below:
 
 ```getPaths``` - useful for getting the list of paths in a DSS file and searching through these paths by wildcards or regex strings.
+
 ```getFullTSC``` - returns an ```xts``` object with the requested data.
+
 ```getFullDT``` - similar to getFullTSC, but returns a data.table.
+
 ```getColumnsByName``` - read PairedDataContainer to data.frame.
 
 #Missing ```JAVA_HOME``` settings:
