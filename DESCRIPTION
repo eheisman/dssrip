@@ -5,15 +5,18 @@ Date: 2013-06-28
 Architecture: i386
 Author: Evan A. Heisman, with contributions from Cameron Bracken
 Maintainer: Evan Heisman <heisman+dssrip@gmail.com>
+URL: http://github.com/eheisman/DSS-Rip
 Description: A wrapper for the HEC-DSSVue program's 'Jython' API, allowing an interface
-    between R and many common hydrologic models.  In order to use this package, a 
-    current version of HEC-DSSVue must be installed, or other HEC product providing
-    the appropriate .jar files and shared libraries.
+  between R and many common hydrologic models.  In order to use this package, a 
+  current version of HEC-DSSVue must be installed, or other HEC product providing
+  the appropriate .jar files and shared libraries.
+SystemRequirements: HEC-DSSVue (>= 2.0.1) 
 Depends:
-    rJava,
-    xts,
-    stringr,
-    data.table
+  rJava,
+  xts,
+  zoo,
+  stringr,
+  data.table
 Suggests:
 	lubridate
 License: MIT
@@ -21,4 +24,4 @@ BugReports: heisman+dssripbugs@gmail.com
 Collate:
     'dssrt.r'
     'onLoad.R'
-	'hydrotools.R'
+	  'hydrotools.R'

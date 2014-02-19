@@ -103,9 +103,29 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   }
 }
 
-test.quiet <- function(){
-  initialize.dssrip(quietDSS=T, verboseLib=T, force.init=T)
-  foobar = opendss("./extdata/test.dss")
+sigConversions = list(boolean="Z", byte="B", char="C", 
+                      short="T", void="V", int="I", 
+                      long="J", float="F", double="D")
+fieldsDF = function(jObject){
+  require(plyr)
+  fields = ldply(.jfields(jObject), function(x) data.frame(FULLNAME=x, 
+                                                           SHORTNAME=last(str_split(x, fixed("."))[[1]]), 
+                                                           CLASS=str_split(x, fixed(" "))[[1]][2], 
+                                                           stringsAsFactors=FALSE))
+  fields$SIGNATURE = llply(fields$CLASS, function(x){
+    out = str_replace_all(x, "\\[\\]", "")
+    if(out %in% names(sigConversions)){
+      out = sigConversions[[out]]
+    } else {
+      out = paste0("L", str_replace_all(out, fixed("."), "/"), ";")
+    }
+    ## If vector, add [
+    if(grepl(fixed("\\[\\]"), x)){
+      out = paste0("[", out)
+    }
+    return(out)
+  })
+  return(fields)
 }
 
 #' opendss Opens a DSS file.
@@ -325,10 +345,6 @@ treesearch <- function(paths, pattern){
   return(paths)
 }
 
-
-sigConversions = list(boolean="Z", byte="B", char="C", 
-                      short="T", void="V", int="I", 
-                      long="J", float="F", double="D")
 #' tsc.to.xts Converts Java TimeSeriesContainer objects into XTS time series objects.
 #' 
 #' convert time series container to XTS
@@ -342,23 +358,8 @@ sigConversions = list(boolean="Z", byte="B", char="C",
 tsc.to.xts <- function(tsc, colnamesSource="parameter"){
   require(stringr)
   require(plyr)
-  fields = ldply(.jfields(tsc), function(x) data.frame(FULLNAME=x, 
-                                                       SHORTNAME=last(str_split(x, fixed("."))[[1]]), 
-                                                       SIGNATURE=str_split(x, fixed(" "))[[1]][2], stringsAsFactors=FALSE))
-  fields$SIGNATURE = llply(fields$SIGNATURE, function(x){
-    out = str_replace_all(x, "\\[\\]", "")
-    if(out %in% names(sigConversions)){
-      out = sigConversions[[out]]
-    } else {
-      out = paste0("L", str_replace_all(out, fixed("."), "/"), ";")
-    }
-    ## If vector, add [
-    if(grepl(fixed("\\[\\]"), x)){
-      out = paste0("[", out)
-    }
-    return(out)
-  })
-  metadata = dlply(fields, "SHORTNAME", function(df){
+  tscFieldsDF = get("tscFieldsDF", envir="hecJavaObjectsDB")
+  metadata = dlply(tscFieldsDF, "SHORTNAME", function(df){
     #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
     if(df$SHORTNAME %in% c("values", "times", "modified", "quality")) {
       return()
@@ -374,6 +375,80 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter"){
   colnames(out) = metadata[[colnamesSource]]
   return(out)
 }
+
+
+#' xts.to.tsc Converts xts objects to Java TimeSeriesContainer objects.
+#' 
+#' Converts xts objects to TimeSeriesContainers for writing to DSS files.
+#' 
+#' Long Description
+#' 
+#' @return java TimeSeriesContainer.
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
+xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
+  ## Fill empty time slots in tsObject
+  times = index(tsObject)
+  fullTimes = seq(min(times), max(times), by=deltat(tsObject))
+  blankTimes = fullTimes[!(fullTimes %in% times)]
+  empties = xts(rep(J("hec/script/Constants")$UNDEFINED, length(blankTimes)), order.by=blankTimes)
+  colnames(empties) = colnames(tsObject)
+  tsObject = rbind(tsObject, empties)
+  
+  ## Configure slots for TimeSeriesContainer object
+  times = as.integer(index(tsObject))/60 + 2209075200/60
+  values = as.numeric(tsObject)
+  metadata = list(
+    times = .jarray(as.integer(times), contents.class="java/lang/Integer"), #, as.integer(times)), new.class="java/lang/Integer")
+    values = .jarray(values, contents.class="java/lang/Double"),
+    endTime = max(times),
+    startTime = min(times),
+    interval = deltat(tsObject)/60,
+    numberValues = length(values),
+    storedAsdoubles = TRUE,
+    modified=FALSE,
+    fileName="",
+    ...
+  )
+  dssMetadata = attr(tsObject, "dssMetadata")
+  for(mdName in colnames(dssMetadata)){
+    if(mdName %in% names(metadata)){
+      next
+    }
+    #if(any(dssMetadata[[mdName]] != first(dssMetadata[[mdName]]))){
+    #  warning(sprintf("Not all metadata matches for %s", mdName))
+    #}
+    metadata[[mdName]] = first(dssMetadata[[mdName]])
+  }
+  ## TODO: pull from protoTSC if required
+  
+  ePart = list("1440"="1DAY", "60"="1HOUR", "15"="15MIN", "1"="1MIN")[[as.character(metadata$interval)]]
+  dPart = paste0("01JAN", year(first(index(tsObject))))
+  metadata$fullName = paste("", metadata$watershed, metadata$location, metadata$parameter, dPart, ePart, metadata$version, "", sep="/")
+  tsc = .jnew("hec/io/TimeSeriesContainer")
+  tscFieldsDF = get("tscFieldsDF", envir="hecJavaObjectsDB")
+  for(n in names(metadata)){
+    print(sprintf("%s:", n))
+    print(metadata[[n]])
+    writeVal = metadata[[n]]
+    if(is.na(writeVal) | writeVal == ""){
+      print("Value is NA, not writing.")
+      next
+    }
+    if(is.factor(writeVal)){
+      writeVal = as.character(writeVal)
+    }
+    if(tscFieldsDF$CLASS[tscFieldsDF$SHORTNAME == n] %in% c("int")){
+      print("Converting to integer.")
+      writeVal = as.integer(writeVal)
+    }
+    .jfield(tsc, n) = writeVal
+  }
+  return(tsc)
+}
+
+
 
 #' tsc.to.dt Converts Java TimeSeriesContainer objects to data.table objects.
 #' 
