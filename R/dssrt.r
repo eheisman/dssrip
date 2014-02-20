@@ -358,7 +358,7 @@ treesearch <- function(paths, pattern){
 tsc.to.xts <- function(tsc, colnamesSource="parameter"){
   require(stringr)
   require(plyr)
-  tscFieldsDF = get("tscFieldsDF", envir="hecJavaObjectsDB")
+  tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
   metadata = dlply(tscFieldsDF, "SHORTNAME", function(df){
     #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
     if(df$SHORTNAME %in% c("values", "times", "modified", "quality")) {
@@ -427,7 +427,7 @@ xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
   dPart = paste0("01JAN", year(first(index(tsObject))))
   metadata$fullName = paste("", metadata$watershed, metadata$location, metadata$parameter, dPart, ePart, metadata$version, "", sep="/")
   tsc = .jnew("hec/io/TimeSeriesContainer")
-  tscFieldsDF = get("tscFieldsDF", envir="hecJavaObjectsDB")
+  tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
   for(n in names(metadata)){
     print(sprintf("%s:", n))
     print(metadata[[n]])

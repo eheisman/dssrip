@@ -14,6 +14,8 @@ export(pathByPartsWildcard)
 export(separatePathParts)
 export(tsc.to.dt)
 export(tsc.to.xts)
+export(xts.to.tsc)
+export(DSS_CONSTANTS)
 
 export(wy)
 export(wateryear)
