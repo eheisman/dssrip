@@ -103,10 +103,15 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   }
 }
 
+
+TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
+
+
+## used to help with introspection on Java Objects
 sigConversions = list(boolean="Z", byte="B", char="C", 
                       short="T", void="V", int="I", 
                       long="J", float="F", double="D")
-fieldsDF = function(jObject){
+fieldsDF <- function(jObject){
   require(plyr)
   fields = ldply(.jfields(jObject), function(x) data.frame(FULLNAME=x, 
                                                            SHORTNAME=last(str_split(x, fixed("."))[[1]]), 
@@ -429,18 +434,18 @@ xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
   tsc = .jnew("hec/io/TimeSeriesContainer")
   tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
   for(n in names(metadata)){
-    print(sprintf("%s:", n))
-    print(metadata[[n]])
+    #print(sprintf("%s:", n))
+    #print(metadata[[n]])
     writeVal = metadata[[n]]
     if(is.na(writeVal) | writeVal == ""){
-      print("Value is NA, not writing.")
+      #print("Value is NA, not writing.")
       next
     }
     if(is.factor(writeVal)){
       writeVal = as.character(writeVal)
     }
     if(tscFieldsDF$CLASS[tscFieldsDF$SHORTNAME == n] %in% c("int")){
-      print("Converting to integer.")
+      #print("Converting to integer.")
       writeVal = as.integer(writeVal)
     }
     .jfield(tsc, n) = writeVal

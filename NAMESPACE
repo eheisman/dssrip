@@ -16,6 +16,8 @@ export(tsc.to.dt)
 export(tsc.to.xts)
 export(xts.to.tsc)
 export(DSS_CONSTANTS)
+export(TSC_TYPES)
+
 
 export(wy)
 export(wateryear)
