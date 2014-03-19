@@ -17,6 +17,7 @@ export(tsc.to.xts)
 export(xts.to.tsc)
 export(DSS_CONSTANTS)
 export(TSC_TYPES)
+export(newDSSVueWindow)
 
 
 export(wy)

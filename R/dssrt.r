@@ -72,6 +72,8 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
     if(verboseLib) packageStartupMessage(str_trim(paste(libs,parameters)))
     
+    #LOGS='-Dlogfile.directory="%APPDATA%/HEC/HEC-DSSVue/logs" -DLOGFILE="%APPDATA%/HEC/HEC-DSSVUE/logs/HEC-DSSVue.log" -DCACHE_DIR="%APPDATA%/HEC/HEC-DSSVue/pythonCache"'
+    #MEMPARAMS="-ms256M -mx2000M"
     .jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...)
     #.jaddClassPath(jars)
     if(verboseLib){
@@ -106,6 +108,18 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
 
 TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
 
+## Convenience function for viewing a DSS file.  DOES NOT WORK
+newDSSVueWindow <- function(file=NULL){
+  mw = .jcall("hec/dssgui/ListSelection",
+              returnSig="Lhec/dssgui/ListSelection;",
+              method="createMainWindow")
+  mw = .jnew("hec/dssgui/ListSelection")
+  mw.show()
+  if(!is.null(file)){
+    mw.openDSSFile(file)
+  }
+  return(mw)
+}
 
 ## used to help with introspection on Java Objects
 sigConversions = list(boolean="Z", byte="B", char="C", 
@@ -146,7 +160,15 @@ fieldsDF <- function(jObject){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-opendss <- function(filename){
+opendss <- function(filename, warnIfNew=TRUE, stopIfNew=FALSE){
+  if(!file.exists(filename) & (warnIfNew | stopIfNew)){
+    message = sprintf("DSS: %s does not exist.  Creating file.", filename)
+    errFunc = warning
+    if(stopIfNew){
+      errFunc = stop
+    }
+    errFunc(message)
+  }
 	dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
   return(dssFile)
 }
