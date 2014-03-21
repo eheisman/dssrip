@@ -15,10 +15,12 @@ export(separatePathParts)
 export(tsc.to.dt)
 export(tsc.to.xts)
 export(xts.to.tsc)
+export(getLooseTSC)
+
+export(openTestFile)
+
 export(DSS_CONSTANTS)
 export(TSC_TYPES)
-export(newDSSVueWindow)
-
 
 export(wy)
 export(wateryear)

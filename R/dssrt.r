@@ -105,8 +105,26 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   }
 }
 
-
+## CONSTANTS
 TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
+
+minutes = c(1,2,3,4,5,6,10,12,15,20,30)
+hours = c(1,2,3,4,6,8,12)
+## Irregular appears to have interval of 0, not -1
+TSC_INTERVALS = c(minutes, 60*hours, 60*24*c(1,7,10,15,30,365), rep(0,5))
+names(TSC_INTERVALS) = c(paste0(minutes, "MIN"),
+                         paste0(hours, "HOUR"),
+                         "1DAY","1WEEK","TRI-MONTH","SEMI-MONTH", "1MON","1YEAR",
+                         paste0("IR-",c("DAY","MON","YEAR","DECADE","CENTURY")))
+
+
+## Only useful when working in package directory!
+openTestFile <- function(){
+  opendss("./extdata/test.dss")
+}
+
+
+
 
 ## Convenience function for viewing a DSS file.  DOES NOT WORK
 newDSSVueWindow <- function(file=NULL){
@@ -508,8 +526,8 @@ tsc.to.dt <- function(tsc){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-getTSC <- function(file, path, ...){
-  return(tsc.to.xts(file$get(path), ...))
+getTSC <- function(file, path, fullTSC=FALSE, ...){
+  return(tsc.to.xts(file$get(path, fullTSC), ...))
 }
 
 #' getDT Get a TSC from a file and pathname as a data.table
@@ -537,6 +555,19 @@ getDT <- function(file, path){
 #' @author Evan Heisman
 #' @export 
 getFullTSC <- function(file, paths, ...){
+  ## Accepts sets of paths or like getFullTSC, or single path. 
+  if(length(paths) > 0){
+    ## Check if all paths are identical, sans D part.
+    pathdf = separatePathParts(paths)
+    identicalPaths = apply(pathdf, 2, function(col) all(unique(col)==col))
+    if(!all(identicalPaths[c("A", "B", "C", "E", "F")])){
+      stop("Cannot create condensed pathname to pull!")
+    }
+  }
+  return(getTSC(file, paths[1], fullTSC=TRUE))  
+}
+
+getLooseTSC <- function(file, paths, ...){
   tscList = list()
   for(p in paths){
     tscList[[p]] = getTSC(file, p, ...)
