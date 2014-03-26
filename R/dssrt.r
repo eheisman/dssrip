@@ -401,8 +401,59 @@ treesearch <- function(paths, pattern){
 #' @author Evan Heisman
 #' @export 
 tsc.to.xts <- function(tsc, colnamesSource="parameter"){
+ 
+  metadata = getMetadata(tsc, colnamesSource=colnamesSource)
+
+  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60, origin="1899-12-31 00:00", tz="UTC"), dssMetadata= as.data.frame(metadata))
+  colnames(out) = metadata[[colnamesSource]]
+  
+  return(out)
+}
+
+#' tsc.to.dt Converts Java TimeSeriesContainer objects to data.table objects.
+#' 
+#' convert time series container to data.table
+#' 
+#' Long Description
+#' 
+#' @return data.table object from times andvalues in TSC.
+#' @note NOTE
+#' @author Cameron Bracken
+#' @export 
+tsc.to.dt <- function(tsc, ...){
+
+  require(data.table)
+
+  times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00", tz="UTC")
+  values = tsc$values
+  units = tsc$units
+  if(length(values)==0)units = character(0)
+
+  out = data.table(datetime=times,value=values,units=units)
+  setkey(out, "datetime")
+  
+  attr(out,'dssMetadata') = as.data.frame(getMetadata(tsc))
+
+  return(out)
+}
+
+
+
+#' getMetadata get metadata from a tsc java object 
+#' 
+#' get metadata from a tsc java object 
+#' 
+#' Long Description
+#' 
+#' @return data.frame containing metadata 
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
+getMetadata <- function(tsc, colnamesSource="parameter"){
+
   require(stringr)
   require(plyr)
+
   tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
   metadata = dlply(tscFieldsDF, "SHORTNAME", function(df){
     #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
@@ -415,10 +466,10 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter"){
     }
     return(val)
   })
+
   metadata = metadata[!(names(metadata) %in% c("values", "times", "modified", "quality"))]
-  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60, origin="1899-12-31 00:00"), dssMetadata= as.data.frame(metadata))
-  colnames(out) = metadata[[colnamesSource]]
-  return(out)
+
+  return(metadata)
 }
 
 
@@ -494,28 +545,6 @@ xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
 }
 
 
-
-#' tsc.to.dt Converts Java TimeSeriesContainer objects to data.table objects.
-#' 
-#' convert time series container to data.table
-#' 
-#' Long Description
-#' 
-#' @return data.table object from times andvalues in TSC.
-#' @note NOTE
-#' @author Cameron Bracken
-#' @export 
-tsc.to.dt <- function(tsc){
-  require(data.table)
-  times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00")
-  values = tsc$values
-  units = tsc$units
-  if(length(values)==0)units = character(0)
-  out = data.table(datetime=times,value=values,units=units)
-  setkey(out, "datetime")
-  return(out)
-}
-
 #' getTSC Get a TSC from a file and pathname as a XTS.
 #' 
 #' Skips intermediate step of getting TimeSeriesContainer object.
@@ -587,13 +616,18 @@ getLooseTSC <- function(file, paths, ...){
 #' @note NOTE
 #' @author Cameron Bracken
 #' @export 
-getFullDT <- function(file, paths){
+getFullDT <- function(file, paths, discard_empty = TRUE){
   require(data.table)
+  
   dtList = list()
   for(p in paths){
-    dtList[[p]] = getDT(file, p)
+    dt = getDT(file, p)
+    if(nrow(dt) == 0 & isTRUE(discard_empty)) next else dtList[[p]] = dt
   }
-  return(do.call(rbind, dtList))
+  dtOut = do.call(rbind, dtList)
+  attr(dtOut,'dssMetadata') = do.call(rbind, lapply(dtList, function(x) attr(x, "dssMetadata")))
+
+  return(dtOut)
 }
 
 ## PairedDataContainer functions
