@@ -58,8 +58,6 @@ This fix may cause issues with other rJava based packages, so do this at your ow
 - Time series import does not handle timezones well, xts objects often default to assuming the file is in GMT.  This may be a larger issue with how R handles timezones on Windows.
 - data.table and rJava both imported and have a naming conflict on the ```J()``` function.  At the moment the rJava version masks the data.table version, the reverse may be more useful.
 
-
-
 # Hydrotools - not quite enough for it's own package.
 
 Not specific for DSS file, but serveral useful functions for hydrologists are included:
@@ -68,4 +66,21 @@ Not specific for DSS file, but serveral useful functions for hydrologists are in
 
 For assessing the fit of hydrologic models, the functions ```nash.sutcliff```, ```rmse```, and ```excelR2``` are provided.
 
-```flowBreaks``` and ```probBreaks``` are provided for generating breaks on a plot with logarithmic and normal-deviate axes, such as those used for flow frequency graphics.
+```flowBreaks``` and ```probBreaks``` are provided for generating breaks on a plot with logarithmic and normal-deviate axes, such as those used for flow frequency graphics.  ```weibullProbs``` returns the corresponding Weibull plotting position for a given vector.
+
+# An example:
+annual_peaks_data.dss contains one path with '
+
+```r
+require(dssrip)
+require(ggplot2)
+require(scales)
+
+testfile = opendss("C:/path/to/annual_peaks_data.dss")
+peaks = getFullTSC(testfile, getPaths(testfile, "C=FLOW-*")[1])
+colnames(peaks) = "FLOW"
+peaks = fortify(peaks) ## xts to data.frame for ggplot2
+peaks$PROB = weibullProbs(peaks$FLOW)
+
+ggplot(peaks)
+```

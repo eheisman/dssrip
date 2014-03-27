@@ -92,7 +92,7 @@ weibullProbs <- function(Qs, exceedance=FALSE, as.points=FALSE){
   return(abs(exceedance - rank(Qs, ties.method=ifelse(as.points, "min", "first"), na.last=FALSE) / (length(Qs)+1)))
 }
 
-probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.percent=TRUE, byPeriod=FALSE, periodSuffix=" yr"){
+probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1,2,5), invert=TRUE, as.percent=TRUE, byPeriod=FALSE, periodSuffix=" yr"){
   probBreaks = NULL
   probLabels = NULL
   level = -1
@@ -122,4 +122,73 @@ probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1), invert=TRUE, as.
   }
   names(probBreaks) = probLabels
   return(probBreaks)
+}
+
+## Transformations for ggplot / scales package
+## with inspiration from probability_trans and log_trans in the scales package.
+##
+## TODO:  reimplement probBreaks and flowBreaks into proper _breaks functions.
+## TODO:  implement nice formatters that behave similarly.
+##
+## such that 
+## ggplot(data) + geom_line(aes(x=flow, y=probs)) + 
+##    scale_x_continuous(trans=hydro_flow_trans()) + 
+##    scale_y_continuous(trans=hydro_probs_trans())
+## produces a decent flow frequency plot by default
+##
+## TODO: implement ways to pass arguments to flowBreaks and probBreaks through these.
+##
+## these are the probability_trans and log10_trans, but with special break and
+## format functions.
+##
+## Example that works:
+## ggplot(peaks, aes(y=PEAK_DAILY_FLOW, x=PROB)) + geom_point() + 
+##   theme_bw(base_size=11) + theme(legend.position = "bottom", panel.grid.minor=element_blank()) +
+##   scale_y_continuous(trans=hydro_flow_trans()) + 
+##   scale_x_continuous(trans=hydro_prob_trans(lines=c(1,2,5), labels=c(1,2,5), byPeriod=TRUE)) + 
+##   stat_smooth(method="glm", family=gaussian(link="log"))
+
+
+hydro_prob_trans <- function(distribution="norm", distArgs=list(), ...){
+  qfun <- match.fun(str_c("q", distribution))
+  pfun <- match.fun(str_c("p", distribution))
+  
+  return(trans_new(
+    name=str_c("hydro_probs_", distribution),
+    transform=function(x) { qDistArgs = distArgs; qDistArgs$p = x; do.call(qfun, qDistArgs)},
+    inverse=function(x) { pDistArgs = distArgs; pDistArgs$q = x; do.call(pfun, pDistArgs)},
+    breaks=hydro_prob_breaks(...),
+    format=format_format(),
+    domain=c(1e-9, 1-1e-9)))
+}
+
+
+hydro_flow_trans <- function(...){
+  return(trans_new(
+    name="hydro_flow",
+    transform=log10_trans()$transform, #function(x) log(x, base=10),
+    inverse=log10_trans()$inverse, #function(x) x^10,
+    breaks=hydro_flow_breaks(...),
+    format=format_format(),
+    domain=c(1e-100,Inf)))
+}
+
+hydro_prob_breaks <- function(...){
+  return(function(x){
+    magnitude = ceiling(abs(log10(min(x))))
+    return(probBreaks(maxLevel=magnitude, ...))
+  })
+}
+
+hydro_flow_breaks <- function(){
+  return(function(x){
+    magnitudes = diff(log10(range(x)))
+    #if(magnitudes < 1){
+    #  return(flowBreaks(x, labels=seq(1,9)))
+    #} else if(magnitudes > 4){
+    #  return(flowBreaks(x, labels=c(1,5)))
+    #} else {
+      return(flowBreaks(x))
+    #}
+  })
 }
