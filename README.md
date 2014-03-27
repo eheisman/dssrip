@@ -84,5 +84,9 @@ colnames(peaks) = "FLOW"
 peaks = fortify(peaks) ## xts to data.frame for ggplot2
 peaks$PROB = weibullProbs(peaks$FLOW)
 
-ggplot(peaks)
+## ggplot(peaks, aes(y=FLOW, x=PROB)) + geom_point() + 
+##   theme_bw(base_size=11) + theme(legend.position = "bottom", panel.grid.minor=element_blank()) +
+##   scale_y_continuous(trans=hydro_flow_trans()) + 
+##   scale_x_continuous(trans=hydro_prob_trans(lines=c(1,2,5), labels=c(1,2,5), byPeriod=TRUE)) + 
+##   stat_smooth(method="glm", family=gaussian(link="log"))
 ```
