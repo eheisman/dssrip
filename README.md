@@ -71,7 +71,7 @@ For assessing the fit of hydrologic models, the functions ```nash.sutcliff```, `
 ```hydro_flow_trans``` and ```hydro_prob_trans``` can be used with ```ggplot```'s ```scale_continuous``` for axes to automatically apply flowBreaks and probBreaks.
 
 # An example:
-annual_peaks_data.dss contains one path with '
+annual_peaks_data.dss contains a record with a USGS flow frequency record.
 
 ```r
 require(dssrip)
