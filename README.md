@@ -68,6 +68,8 @@ For assessing the fit of hydrologic models, the functions ```nash.sutcliff```, `
 
 ```flowBreaks``` and ```probBreaks``` are provided for generating breaks on a plot with logarithmic and normal-deviate axes, such as those used for flow frequency graphics.  ```weibullProbs``` returns the corresponding Weibull plotting position for a given vector.
 
+```hydro_flow_trans``` and ```hydro_prob_trans``` can be used with ```ggplot```'s ```scale_continuous``` for axes to automatically apply flowBreaks and probBreaks.
+
 # An example:
 annual_peaks_data.dss contains one path with '
 
