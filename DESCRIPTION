@@ -16,12 +16,15 @@ Depends:
   xts,
   zoo,
   stringr,
-  data.table
+  data.table,
+  plyr,
+  scales
 Suggests:
-	lubridate
+  lubridate,
+  ggplot2
 License: MIT
 BugReports: heisman+dssripbugs@gmail.com
 Collate:
-    'dssrt.r'
-    'onLoad.R'
-	  'hydrotools.R'
+  'dssrt.r'
+  'onLoad.R'
+  'hydrotools.R'
