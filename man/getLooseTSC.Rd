@@ -1,8 +1,8 @@
-\name{getFullTSC}
-\alias{getFullTSC}
+\name{getLooseTSC}
+\alias{getLooseTSC}
 \title{getFullTSC Get a full TSC, ignoring date parameters.}
 \usage{
-getFullTSC(file, paths, ...)
+getLooseTSC(file, paths, ...)
 }
 \value{
 merged xts of all times and values in time series matching
@@ -22,7 +22,7 @@ NOTE
 Evan Heisman
 }
 \seealso{
-Other getTSC: \code{\link{getLooseTSC}};
+Other getTSC: \code{\link{getFullTSC}};
 \code{\link{getTSC}}
 }
 

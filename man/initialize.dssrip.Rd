@@ -1,23 +1,53 @@
 \name{initialize.dssrip}
 \alias{initialize.dssrip}
-\title{initialize.dssrip}
+\title{initialize.dssrip Starts JVM with configuration for DSS-Vue's jar and dll files.}
 \usage{
-  initialize.dssrip(as.package = F, dss_location = NULL,
-    platform = NULL, jmemory = NULL)
+initialize.dssrip(pkgname = NULL, lib.loc,
+  dss_location = getOption("dss_location"),
+  dss_jre = getOption("dss_jre_location"), platform = NULL, quietDSS = F,
+  verboseLib = F, parameters = NULL, ...)
+}
+\arguments{
+  \item{as.package}{If true, uses .jpackage instead of
+  .jinit for better encapsulation of module. (Buggy!)}
+
+  \item{dss_location}{Specify location of DSSVue libraries
+  if not in default location.}
+
+  \item{platform}{Specify platform, used in determining
+  default DSS location.}
+
+  \item{quietDSS}{- don't show 'Z' messages during opening,
+  reading, and writing to a file.  Experimental.}
+
+  \item{parameters}{Options string to pass to JVM.}
 }
 \value{
-  Nothing useful returned.
+JVM initialization status - 0 if successful, positive for
+partial initialization, negative for failure.  See ?.jinit
 }
 \description{
-  Short description
+Starts JVM with parameters required to use HEC's jar files.
 }
 \details{
-  Long Description
+as.package is an experimental parameter for calling this as
+part of the onLoad function as part of the DSS-Rip package.
+This is the prefered method for an R package, but not yet
+functional for this.  The best practice is to load the
+DSS-Rip package, and call initialize.dssrip with
+as.package=FALSE, the default value.  Either the
+'nativeLibrary' parameter for .jpackage, or as a dyn.load,
+would be the place to load javaHeclib.dll, but rather than
+distribute it with this R package, the user should obtain
+it from an install of HEC-DSSVue.  Further reasons to use
+.jinit include being able to initialize the JVM in the same
+manner as HEC-DSSVue would, adding the appropriate jars and
+DLLs as start up options.
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

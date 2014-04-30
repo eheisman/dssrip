@@ -1,22 +1,28 @@
 \name{opendss}
 \alias{opendss}
-\title{opendss}
+\title{opendss Opens a DSS file.}
 \usage{
-  opendss(filename)
+opendss(filename, warnIfNew = TRUE, stopIfNew = FALSE)
+}
+\arguments{
+  \item{filename}{Location of DSS file to open.}
 }
 \value{
-  stuff
+'hec.heclib.dss.HecDss' object of DSS file at filename
 }
 \description{
-  Short description
+Returns a DSS file object.
 }
 \details{
-  Long Description
+Returns an object from the java class
+'hec.heclib.dss.HecDss' used for reading and writing to the
+file located at filename.  Don't forget to call
+myFile$close() or myFile$done() when finished.
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

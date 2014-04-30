@@ -1,22 +1,22 @@
 \name{pathByPartsWildcard}
 \alias{pathByPartsWildcard}
-\title{pathByPartsWildcard}
+\title{pathByPartsWildcard Search paths by parts, using wildcards.}
 \usage{
-  pathByPartsWildcard(paths, pattern)
+pathByPartsWildcard(paths, pattern)
 }
 \value{
-  stuff
+stuff
 }
 \description{
-  Short description
+Searches path by individual parts, e.g. "A=*CREEK* C=FLOW"
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

@@ -1,22 +1,27 @@
 \name{getTSC}
 \alias{getTSC}
-\title{getTSC}
+\title{getTSC Get a TSC from a file and pathname as a XTS.}
 \usage{
-  getTSC(file, path)
+getTSC(file, path, fullTSC = FALSE, ...)
 }
 \value{
-  stuff
+xts from time series located at path in file.
 }
 \description{
-  Short Desc
+Skips intermediate step of getting TimeSeriesContainer
+object.
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
+}
+\seealso{
+Other getTSC: \code{\link{getFullTSC}};
+\code{\link{getLooseTSC}}
 }
 

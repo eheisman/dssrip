@@ -1,0 +1,22 @@
+\name{getMetadata}
+\alias{getMetadata}
+\title{getMetadata get metadata from a tsc java object}
+\usage{
+getMetadata(tsc, colnamesSource = "parameter")
+}
+\value{
+data.frame containing metadata
+}
+\description{
+get metadata from a tsc java object
+}
+\details{
+Long Description
+}
+\note{
+NOTE
+}
+\author{
+Evan Heisman
+}
+

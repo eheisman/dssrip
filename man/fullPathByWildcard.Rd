@@ -1,22 +1,22 @@
 \name{fullPathByWildcard}
 \alias{fullPathByWildcard}
-\title{fullPathByWildcard}
+\title{fullPathByWildcard Search paths by wildcard.}
 \usage{
-  fullPathByWildcard(paths, pattern)
+fullPathByWildcard(paths, pattern)
 }
 \value{
-  stuff
+stuff
 }
 \description{
-  Short description
+Searches full paths by wildcard, e.g. "/A/B/C/*/*/F/"
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

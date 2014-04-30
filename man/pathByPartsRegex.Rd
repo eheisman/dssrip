@@ -1,22 +1,23 @@
 \name{pathByPartsRegex}
 \alias{pathByPartsRegex}
-\title{pathByPartsRegex}
+\title{pathByPartsRegex Search path by parts using regex.}
 \usage{
-  pathByPartsRegex(paths, pattern, pattern.parts = NULL)
+pathByPartsRegex(paths, pattern, pattern.parts = NULL)
 }
 \value{
-  stuff
+stuff
 }
 \description{
-  Short description
+Searches path by parts using regular expressions, e.g.
+"A=.*CREEK.* C=FLOW"
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

@@ -1,22 +1,22 @@
 \name{getColumnsByName}
 \alias{getColumnsByName}
-\title{getColumnsByName}
+\title{getColumnsByName Get a column from a PairedDataContainer object.}
 \usage{
-  getColumnsByName(file, pdc, column)
+getColumnsByName(file, pdc, column)
 }
 \value{
-  stuff
+vector of values from column.
 }
 \description{
-  Short Desc
+Gets a column from a paired data container by name.
 }
 \details{
-  Long Description
+Name of column must be exact or NA is returned.
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

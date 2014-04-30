@@ -1,22 +1,24 @@
 \name{getFullDT}
 \alias{getFullDT}
-\title{getFullDT}
+\title{getFullDT Get a full TSC as data.table, ignoring date parameters.}
 \usage{
-  getFullDT(file, paths)
+getFullDT(file, paths, discard_empty = TRUE)
 }
 \value{
-  stuff
+merged data.tame of all times and values in the time series
+matching paths.
 }
 \description{
-  Short Desc
+Gets paths, converts to data.table, and merges to one time
+series.
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Cameron Bracken
+Cameron Bracken
 }
 

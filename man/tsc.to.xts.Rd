@@ -1,22 +1,22 @@
 \name{tsc.to.xts}
 \alias{tsc.to.xts}
-\title{tsc.to.xts}
+\title{tsc.to.xts Converts Java TimeSeriesContainer objects into XTS time series objects.}
 \usage{
-  tsc.to.xts(tsc)
+tsc.to.xts(tsc, colnamesSource = "parameter")
 }
 \value{
-  stuff
+xts object from times and values in TSC.
 }
 \description{
-  convert time series container to XTS
+convert time series container to XTS
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

@@ -1,22 +1,23 @@
 \name{fullPathByRegex}
 \alias{fullPathByRegex}
-\title{fullPathByRegex}
+\title{fullPathByRegex Search full paths with regex.}
 \usage{
-  fullPathByRegex(paths, pattern)
+fullPathByRegex(paths, pattern)
 }
 \value{
-  stuff
+stuff
 }
 \description{
-  Short description
+Searches full paths using regular expressions, e.g.
+"/A/B/C/.*/.*/F/"
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

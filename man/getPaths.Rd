@@ -1,23 +1,35 @@
 \name{getPaths}
 \alias{getPaths}
-\title{getPaths}
+\title{getPaths Search DSS paths by filter.}
 \usage{
-  getPaths(dssfile, pattern = NULL,
-    searchfunction = fullPathByWildcard)
+getPaths(file, searchString = "/*/*/*/*/*/*/", searchfunction = NULL,
+  pattern = searchString, searchFunction = searchfunction,
+  useRegex = FALSE)
+}
+\arguments{
+  \item{file}{DSS file reference}
+
+  \item{searchString}{Search string}
+
+  \item{searchFunction}{Filter function to use with search
+  string}
 }
 \value{
-  stuff
+character vector of paths matching filter criteria.
 }
 \description{
-  get catalog to usable function
+Allows searching DSS paths similar to
+getCatalogedPathnames(searchPattern) in the Jython API.
 }
 \details{
-  Long Description
+Uses the pattern parameter to return a filtered list of
+paths.  The filter method is defined by the searchfunction
+parameter.
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

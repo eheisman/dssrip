@@ -1,22 +1,22 @@
 \name{separatePathParts}
 \alias{separatePathParts}
-\title{separatePathParts}
+\title{separatePathParts Separates path parts into dataframe.}
 \usage{
-  separatePathParts(paths)
+separatePathParts(paths)
 }
 \value{
-  stuff
+data frame consisting of split path parts and full paths.
 }
 \description{
-  useful function for writing filters
+useful function for writing filters
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

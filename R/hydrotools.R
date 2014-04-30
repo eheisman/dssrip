@@ -7,34 +7,46 @@ require(scales)
 ## "Constants"
 ###################
 
-AF_PER_CFS_DAY = 1.9835
+#' @title hydrologic constants
+#' @description used for converting between flows in (k)cfs and volumes in (K)AF
+#' @note an exact conversion as cubic feet per acre-foot is 43560, seconds in a day is 86400, simplifing the conversion gets 24/12.1
+#' @export
+AF_PER_CFS_DAY = 24/12.1  ## This is an exact conversion.  == (24hr/day * 60min/hr * 60s/min)/(43560 ft^2/acre * 1 ft)
 
 ## Water specific date functions
 #################################
 
-#' @name wy Gets water year (Oct to Sept) from POSIXt object.
-#' @aliases wateryear
-#' @title Index by water year.
-#' @param t
+#' @name wateryear 
+#' @description Gets water year (Oct to Sept) from POSIXt object.
+#' @title 'lubridate' type functions for getting numeric values from `Date` and `POSIXt` objects.
+#' @param t timestamp object (e.g. Date, POSIXt)
 #' @return integer of water year
-#' @note aliased to 'wateryear'
 #' Works similar to 'year' function on POSIXt classes
-#' @rdname wy
 #' @export
-wy <-  function(t) year(t) + ifelse(month(t) >= 10, 1, 0)
-#' @rdname wy
-#' @export
-wateryear = wy
+#' @aliases wymonth, wyday, wymonth.abb
+wateryear <-  function(t) year(t) + ifelse(month(t) >= 10, 1, 0)
 
-#' @name wymonth Get's the month in the water year (Oct=1, Sept=12)
+#' @name wymonth 
+#' @description Get's the month in the water year (Oct=1, Sept=12)
 #' @title Month of water year
-#' @param t
+#' @param t timestamp object (e.g. Date, POSIXt)
 #' @return integer of month in water year (OCT = 1, SEP = 12)
-#' @note aliased to 'wateryear'
 #' Works similar to 'year' function on POSIXt classes
 #' @export
+#' @fai
 wymonth = function(t) (month(t) + 2) %% 12 + 1
 
+#' @name wyday 
+#' @description Get the day of water year (01Oct=1, 30Sep=365+leapyear(y))
+#' @title Day of water year
+#' @param t timestamp object (e.g. Date, POSIXt)
+#' @return integer of day in water year (01Oct=1, 30Sep=365+leapyear(y))
+#' @export
+wyday <- function(t) as.integer(as.POSIXct(t) - as.POSIXct(paste0(wateryear(t)-1, "-10-01")))
+                           
+#' @name wymonth.abb 
+#' @description month.abb reordered for Oct (1) to Sep (12)
+#' @title Water year month
 #' @export
 wymonth.abb = month.abb[c(10:12,1:9)]
 
@@ -44,12 +56,30 @@ wymonth.abb = month.abb[c(10:12,1:9)]
 ## Error Functions
 ###################
 
-## For comparisons with data from Excel
+## For comparisons with data from Excel - because people are comfortable with this.
+
+#' Model error measuring functions
+#' @name model_error_measurement
+#' @aliases rmse, nash.sutcliffe, excelR2
+#' @title Model error measurement functions
+#' @param x.obs - observed values
+#' @param x.model - modeled values
+#' @param x.alt - alternate model for comparison (Nash Sutcliffe only, defaults to mean of observed)
+#' @return score - see details.
+#' @family model_error_functions
+#' @details
+#' `excelR2` returns the R^2 as reported by Excel's curve fits.
+#' `rmse` returns the root mean square error.
+#' `nash.sutcliffe` returns the Nash-Sutcliffe model coefficent, greater than 0 if `x.model` is a better fit than x.alt, 1 if a perfect fit, and between 0 and -\Inf if a worse fit than x.alt.
+
+#' @export
 excelR2 = function(x.obs, x.model) cor(x.obs, x.model, method="pearson")**2
 
-## RMSE function, checked
-# one parameter assumes x1 is residuals,
-# two parameters assumes x1 and x2 are modeled versus fitted
+#' RMSE function, checked
+#' one parameter assumes x1 is residuals,
+#' two parameters assumes x1 and x2 are modeled versus fitted
+#' @name rmse
+#' @export
 rmse = function(x.obs, x.model=NULL){
   if(!is.null(x.obs)){
     x.obs = x.obs - x.model
@@ -57,19 +87,24 @@ rmse = function(x.obs, x.model=NULL){
   return(sqrt(mean((x.obs)**2)))
 }
 
-## Nash-Sutcliffe measure
-# checks for better performance than assuming climatology or against another model.
-nash.sutcliffe = function(x.obs, x.model, x.alt=NULL){
-  if(is.null(x.alt)){
-    x.alt = mean(x.obs)
-  }
+#' Nash-Sutcliffe model coefficient
+#' checks for better performance than assuming climatology or against another model.
+#' @name nash.sutcliffe
+#' @export
+nash.sutcliffe = function(x.obs, x.model, x.alt=mean(x.obs)){
   return(1 - sum((x.obs - x.model)**2) / sum((x.obs - x.alt)**2))
 }
 
 
 ## Frequency Curve For ggplot2
 ###############################
-
+#' @name flowBreaks
+#' @description
+#' Generates a list of breaks for log10 axes that includes multiples of each magnitude, with names from 'labels'.
+#' @export
+#' @param Q flows, used to determine range
+#' @param labels which breaks should be labeled, using seq(1,9) would be crowded, default is usually acceptable.
+#' @return list of breaks with names to use as labels.
 flowBreaks <- function(Q, labels=c(1,2,3,5,7)){
   logRange = log10(range(Q))
   lower = 10^floor(logRange[1])
@@ -87,6 +122,14 @@ flowBreaks <- function(Q, labels=c(1,2,3,5,7)){
   return(ybreaks)
 }
 
+#' @name wiebullProbs
+#' @description
+#' generates weibull plotting positions for given vector.  Often used in hydrologic 'flow frequency curves' 
+#' @param Qs list of points for which weibull plotting positions are needed
+#' @param exceedance boolean that determines if plotting positions should be exceedance probabilities or non-exceedance probabilities.
+#' @param as.points boolean if ties should get independent points or not.
+#' @return probabilities in range of (0,1) corresponding to each point in input vector.
+#' @export
 weibullProbs <- function(Qs, exceedance=FALSE, as.points=FALSE){
   ## Ties.method as 'min' if diplsaying points, "first" if displaying as a line.  Series of points with same value having different probabilities doesn't make sense.
   return(abs(exceedance - rank(Qs, ties.method=ifelse(as.points, "min", "first"), na.last=FALSE) / (length(Qs)+1)))
@@ -148,7 +191,14 @@ probBreaks <- function(maxLevel=3, lines=c(1,2,5), labels=c(1,2,5), invert=TRUE,
 ##   scale_x_continuous(trans=hydro_prob_trans(lines=c(1,2,5), labels=c(1,2,5), byPeriod=TRUE)) + 
 ##   stat_smooth(method="glm", family=gaussian(link="log"))
 
-
+#' @name hydrologic transforms for ggplot2
+#' @description 
+#' Axis transforms for hydrologic plots in ggplot2.
+#' @details
+#' hydro_prob_trans for probability axes on frequency plots
+#' hydro_flow_trans for log axes with additional breaks
+#' @export
+#' @aliases hydro_flow_trans, hydro_prob_breaks, hydro_flow_breaks
 hydro_prob_trans <- function(distribution="norm", distArgs=list(), ...){
   qfun <- match.fun(str_c("q", distribution))
   pfun <- match.fun(str_c("p", distribution))
@@ -162,7 +212,8 @@ hydro_prob_trans <- function(distribution="norm", distArgs=list(), ...){
     domain=c(1e-9, 1-1e-9)))
 }
 
-
+#' @name hydro_flow_trans
+#' @export
 hydro_flow_trans <- function(...){
   return(trans_new(
     name="hydro_flow",
@@ -173,6 +224,8 @@ hydro_flow_trans <- function(...){
     domain=c(1e-100,Inf)))
 }
 
+#' @name hydro_prob_breaks
+#' @export
 hydro_prob_breaks <- function(...){
   return(function(x){
     magnitude = ceiling(abs(log10(min(x))))
@@ -180,6 +233,8 @@ hydro_prob_breaks <- function(...){
   })
 }
 
+#' @name hydro_flow_breaks
+#' @export
 hydro_flow_breaks <- function(){
   return(function(x){
     magnitudes = diff(log10(range(x)))

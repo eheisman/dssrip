@@ -1,22 +1,22 @@
 \name{getDT}
 \alias{getDT}
-\title{detDT}
+\title{getDT Get a TSC from a file and pathname as a data.table}
 \usage{
-  getDT(file, path)
+getDT(file, path)
 }
 \value{
-  stuff
+stuff
 }
 \description{
-  short desc
+short desc
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Cameron Bracken
+Cameron Bracken
 }
 

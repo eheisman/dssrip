@@ -1,0 +1,21 @@
+\name{fixTimestamps}
+\alias{fixTimestamps}
+\title{Adjusts timestamps back by one day.}
+\usage{
+fixTimestamps(ts, n = -24 * 60 * 60)
+}
+\arguments{
+  \item{n}{seconds to adjust timestamp by, defaults to
+  -24*60*60, e.g. 1 day.}
+}
+\value{
+xts with timestamps adjusted back by n
+}
+\description{
+Used to convert 24:00 timestamps back to proper date.
+}
+\note{
+- this should be automated in future version by checking if
+the TSC's type allows 24:00 timestamps
+}
+

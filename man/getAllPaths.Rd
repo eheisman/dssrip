@@ -1,22 +1,29 @@
 \name{getAllPaths}
 \alias{getAllPaths}
-\title{getAllPaths}
+\title{getAllPaths Returns all paths in DSS file.}
 \usage{
-  getAllPaths(file, rebuild = FALSE)
+getAllPaths(file, rebuild = FALSE)
+}
+\arguments{
+  \item{file}{a DSS file reference from opendss}
+
+  \item{rebuild}{Set to true to force rebuilding the DSS
+  catalog file (.dsc).}
 }
 \value{
-  stuff
+a character vector of DSS paths in the file.
 }
 \description{
-  get catalog to usable function
+Returns a list of all DSS paths in a file, useful for
+searching for data.
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Evan Heisman
+Evan Heisman
 }
 

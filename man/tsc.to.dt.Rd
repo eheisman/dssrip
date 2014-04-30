@@ -1,22 +1,22 @@
 \name{tsc.to.dt}
 \alias{tsc.to.dt}
-\title{tsc.to.dt}
+\title{tsc.to.dt Converts Java TimeSeriesContainer objects to data.table objects.}
 \usage{
-  tsc.to.dt(tsc)
+tsc.to.dt(tsc, ...)
 }
 \value{
-  stuff
+data.table object from times andvalues in TSC.
 }
 \description{
-  convert time series container to data.table
+convert time series container to data.table
 }
 \details{
-  Long Description
+Long Description
 }
 \note{
-  NOTE
+NOTE
 }
 \author{
-  Cameron Bracken
+Cameron Bracken
 }
 

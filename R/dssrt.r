@@ -105,12 +105,18 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   }
 }
 
-## CONSTANTS
+#' Constants used in DSS
+#' These are exported for building functions manipulating the raw rJava objects.
+#' @note Types for time series objects
+#' @export
+#' @family DSS_CONSTANTS
 TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
 
 minutes = c(1,2,3,4,5,6,10,12,15,20,30)
 hours = c(1,2,3,4,6,8,12)
 ## Irregular appears to have interval of 0, not -1
+#' @export
+#' @family DSS_CONSTANTS
 TSC_INTERVALS = c(minutes, 60*hours, 60*24*c(1,7,10,15,30,365), rep(0,5))
 names(TSC_INTERVALS) = c(paste0(minutes, "MIN"),
                          paste0(hours, "HOUR"),
@@ -404,6 +410,7 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter"){
  
   metadata = getMetadata(tsc, colnamesSource=colnamesSource)
 
+  ## TODO: fix tz="UTC" to use local if not specified in tsc's timezone parameter
   out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60, origin="1899-12-31 00:00", tz="UTC"), dssMetadata= as.data.frame(metadata))
   colnames(out) = metadata[[colnamesSource]]
   
@@ -555,6 +562,7 @@ xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
+#' @family getTSC
 getTSC <- function(file, path, fullTSC=FALSE, ...){
   return(tsc.to.xts(file$get(path, fullTSC), ...))
 }
@@ -583,6 +591,7 @@ getDT <- function(file, path){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
+#' @family getTSC
 getFullTSC <- function(file, paths, ...){
   ## Accepts sets of paths or like getFullTSC, or single path. 
   if(length(paths) > 0){
@@ -596,6 +605,17 @@ getFullTSC <- function(file, paths, ...){
   return(getTSC(file, paths[1], fullTSC=TRUE))  
 }
 
+#' getFullTSC Get a full TSC, ignoring date parameters.
+#' 
+#' Gets paths, converts to XTS, and merges to one time series.
+#' 
+#' Warning - does not check that all paths are the same except for D part
+#' 
+#' @return merged xts of all times and values in time series matching paths.
+#' @note NOTE
+#' @author Evan Heisman
+#' @export 
+#' @family getTSC
 getLooseTSC <- function(file, paths, ...){
   tscList = list()
   for(p in paths){
@@ -628,6 +648,20 @@ getFullDT <- function(file, paths, discard_empty = TRUE){
   attr(dtOut,'dssMetadata') = do.call(rbind, lapply(dtList, function(x) attr(x, "dssMetadata")))
 
   return(dtOut)
+}
+
+# Adjusts "24:00" timestamps back one day so indexing appears appropriately.
+#' Adjusts timestamps back by one day.  
+#' 
+#' Used to convert 24:00 timestamps back to proper date.
+#' 
+#' @note - this should be automated in future version by checking if the TSC's type allows 24:00 timestamps
+#' 
+#' @param n seconds to adjust timestamp by, defaults to -24*60*60, e.g. 1 day.
+#' @return xts with timestamps adjusted back by n
+fixTimestamps <- function(ts, n=-24*60*60){
+  index(ts) = as.POSIXct(index(ts), origin="1970-01-01") + n
+  return(ts)
 }
 
 ## PairedDataContainer functions
