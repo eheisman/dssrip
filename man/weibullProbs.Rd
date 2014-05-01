@@ -1,5 +1,6 @@
-\name{wiebullProbs}
-\alias{wiebullProbs}
+\name{weibullProbs}
+\alias{weibullProbs}
+\title{Compute Weibull plotting positions for flow frequency curves}
 \usage{
 weibullProbs(Qs, exceedance = FALSE, as.points = FALSE)
 }
@@ -21,5 +22,8 @@ in input vector.
 \description{
 generates weibull plotting positions for given vector.
 Often used in hydrologic 'flow frequency curves'
+}
+\author{
+Evan Heisman
 }
 

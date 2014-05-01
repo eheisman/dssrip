@@ -1,6 +1,6 @@
 \name{initialize.dssrip}
 \alias{initialize.dssrip}
-\title{initialize.dssrip Starts JVM with configuration for DSS-Vue's jar and dll files.}
+\title{DSS-Rip Initalization Options}
 \usage{
 initialize.dssrip(pkgname = NULL, lib.loc,
   dss_location = getOption("dss_location"),
@@ -27,7 +27,8 @@ JVM initialization status - 0 if successful, positive for
 partial initialization, negative for failure.  See ?.jinit
 }
 \description{
-Starts JVM with parameters required to use HEC's jar files.
+Starts a rJava JVM with configuration for DSS-Vue's jar and
+dll files.
 }
 \details{
 as.package is an experimental parameter for calling this as
@@ -43,9 +44,6 @@ it from an install of HEC-DSSVue.  Further reasons to use
 .jinit include being able to initialize the JVM in the same
 manner as HEC-DSSVue would, adding the appropriate jars and
 DLLs as start up options.
-}
-\note{
-NOTE
 }
 \author{
 Evan Heisman

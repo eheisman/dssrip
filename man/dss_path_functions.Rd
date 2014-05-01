@@ -1,0 +1,69 @@
+\name{dss_path_functions}
+\alias{dss_path_functions}
+\alias{fullPathByRegex}
+\alias{fullPathByWildcard}
+\alias{getAllPaths}
+\alias{getPaths}
+\alias{pathByPartsRegex}
+\alias{pathByPartsWildcard}
+\alias{separatePathParts}
+\alias{splitPattern}
+\title{Functions for searching pathnames in a DSS file}
+\usage{
+\code{getPaths(file, searchString)}
+\code{getPaths(file, searchString, searchFunction, ...)}
+\code{getAllPaths(file, rebuild=FALSE)}
+\code{splitPattern(pattern)}
+\code{separatePathParts(paths)}
+}
+\arguments{
+  \item{file}{dss file from \code{opendss}}
+
+  \item{searchString}{string sent to filter for search, see
+  detail section on filters.}
+
+  \item{searchFunction}{function used to search, defaults
+  to path by parts.}
+
+  \item{useRegex}{boolean to determine if regex or
+  wildcards should be used.}
+}
+\value{
+list of pathnames for use with
+\code{\link{getFullTSC}}/\code{\link{getFullDT}} functions.
+}
+\description{
+Functions to search for path names in DSS files.
+}
+\details{
+functions ending in \code{Wildcard} use the standard "*" to
+match wildcard characters, converting search strings with
+\code{\link{glob2rx}}.  Search functions ending in
+\code{Regex} use the \code{\link{grepl}} function to test
+parts.
+
+\code{fullPath} functions expect a six part full path name
+(e.g. \code{/A/B/C/D/E/F/}), with asterisks for unknown
+parts, as blanks match blank path parts.
+
+\code{pathByParts} functions use the format
+"\code{A=PATTERN B=PATTERN}" for their search string.
+Parts not specified will be searched for as a wildcard
+
+See Page 8-32 of the HEC-DSSVue manual for further examples
+on the wildcard methods.  The "
+}
+\examples{
+getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=USGS")
+getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=USGS", pathByPartsWildcard)
+getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=US.*", pathByPartsRegex)
+getPaths(dssfile, "/BRANDYWINE CREEK/WILMINGTON, DE/STAGE/*/*/USGS/")
+getPaths(dssfile, "/BRANDYWINE CREEK/WILMINGTON, DE/STAGE/*/*/USGS/", fullPathByWildcard)
+getPaths(dssfile, "/BRANDYWINE CREEK/WILMINGTON, DE/STAGE/.*/.*/USGS/", fullPathByRegex)
+getAllPaths(dssfile)
+getAllPaths(dssfile, rebuild=TRUE)
+}
+\author{
+Evan Heisman
+}
+

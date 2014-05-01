@@ -1,14 +1,10 @@
 \name{rmse}
 \alias{rmse}
-\title{RMSE function, checked
-one parameter assumes x1 is residuals,
-two parameters assumes x1 and x2 are modeled versus fitted}
+\title{RMSE function}
 \usage{
-rmse(x.obs, x.model = NULL)
+rmse(x.obs, x.model = NULL, residuals = x.obs)
 }
 \description{
-RMSE function, checked one parameter assumes x1 is
-residuals, two parameters assumes x1 and x2 are modeled
-versus fitted
+RMSE function
 }
 

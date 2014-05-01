@@ -1,6 +1,6 @@
 \name{opendss}
 \alias{opendss}
-\title{opendss Opens a DSS file.}
+\title{Open a DSS file.}
 \usage{
 opendss(filename, warnIfNew = TRUE, stopIfNew = FALSE)
 }
@@ -11,16 +11,18 @@ opendss(filename, warnIfNew = TRUE, stopIfNew = FALSE)
 'hec.heclib.dss.HecDss' object of DSS file at filename
 }
 \description{
-Returns a DSS file object.
-}
-\details{
 Returns an object from the java class
 'hec.heclib.dss.HecDss' used for reading and writing to the
 file located at filename.  Don't forget to call
 myFile$close() or myFile$done() when finished.
+
+file stored in variable \code{dssfile} can be closed with
+\code{dssfile$close()} or \code{dssfile$done()}
 }
 \note{
-NOTE
+This call failing saying that javaHeclib.dll cannot be
+found usually indicates that the \code{dss_location}
+configuration variable is not set correctly.
 }
 \author{
 Evan Heisman
