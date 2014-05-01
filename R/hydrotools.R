@@ -82,7 +82,7 @@ wymonth.abb = month.abb[c(10:12,1:9)]
 #'
 #' \code{nash.sutcliffe} returns the Nash-Sutcliffe model coefficent, greater than 0 if `x.model` is a better fit than x.alt, 1 if a perfect fit, and between 0 and -infinity if a worse fit than x.alt.
 #' 
-#' @references Nash, J. E. and J. V. Sutcliffe (1970), River flow forecasting through conceptual models part I - A discussion of principles, Journal of Hydrology, 10 (3), 282–290.
+#' @references Nash, J. E. and J. V. Sutcliffe (1970), River flow forecasting through conceptual models part I - A discussion of principles, Journal of Hydrology, 10 (3), 282-290.
 #' @export
 
 #' @title Excel-like R^2 function
