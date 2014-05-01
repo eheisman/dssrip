@@ -225,6 +225,7 @@ getFullDT <- function(file, paths, discard_empty = TRUE){
 #' 
 #' @param n seconds to adjust timestamp by, defaults to -24*60*60, e.g. 1 day.
 #' @return xts with timestamps adjusted back by n
+#' @export
 fixTimestamps <- function(ts, n=-24*60*60){
   index(ts) = as.POSIXct(index(ts), origin="1970-01-01") + n
   return(ts)
