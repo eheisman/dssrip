@@ -1,6 +1,6 @@
 Package: dssrip
 Title: DSS R Interface Project
-Version: 0.0.1
+Version: 0.1
 Date: 2013-06-28
 Architecture: i386
 Author: Evan A. Heisman, with contributions from Cameron Bracken
@@ -17,7 +17,7 @@ Depends:
     zoo,
     stringr,
     data.table,
-    plyr,
+    plyr
 Suggests:
     lubridate,
     ggplot2,
