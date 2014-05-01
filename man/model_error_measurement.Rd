@@ -43,8 +43,7 @@ Evan Heisman
 }
 \references{
 Nash, J. E. and J. V. Sutcliffe (1970), River flow
-forecasting through conceptual models part I — A
-discussion of principles, Journal of Hydrology, 10 (3),
-282–290.
+forecasting through conceptual models part I - A discussion
+of principles, Journal of Hydrology, 10 (3), 282–290.
 }
 
