@@ -88,8 +88,12 @@ wymonth.abb = month.abb[c(10:12,1:9)]
 
 #' @title Excel-like R^2 function
 #' @name excelR2
-excelR2 = function(x.obs, x.model) cor(x.obs, x.model, method="pearson")**2
-
+excelR2 = function(x.obs, x.model, warn=FALSE){
+  if(warn){
+    warning("What are you doing using excelR2?  Didn't you read the manual!")
+  }
+  cor(x.obs, x.model, method="pearson")**2
+}
 #' @title RMSE function
 #' @name rmse
 #' @export
