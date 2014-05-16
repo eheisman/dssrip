@@ -76,13 +76,14 @@ wymonth.abb = month.abb[c(10:12,1:9)]
 #' @param x.alt - alternate model for comparison (Nash Sutcliffe only, defaults to mean of observed)
 #' @details
 #' 
-#' \code{excelR2} returns the R^2 as reported by Excel's curve fits.  It is provided as people are comfortable with it, but is a terrible measure of model accuracy as it only provides correlation, not fit.
+#' \code{excelR2} returns the R^2 as reported by Excel's curve fits.  It is provided as people are comfortable with it, but is a terrible measure of model accuracy.  See the references below.
 #'
 #' \code{rmse} returns the root mean square error.  With one parameter assumes x.obs is residuals, with two, computes residuals between x.obs and x.model
 #'
 #' \code{nash.sutcliffe} returns the Nash-Sutcliffe model coefficent, greater than 0 if `x.model` is a better fit than x.alt, 1 if a perfect fit, and between 0 and -infinity if a worse fit than x.alt.
 #' 
 #' @references Nash, J. E. and J. V. Sutcliffe (1970), River flow forecasting through conceptual models part I - A discussion of principles, Journal of Hydrology, 10 (3), 282-290.
+#' @references Hopper, T. (2014), Can We do Better than R-squared? http://www.r-bloggers.com/can-we-do-better-than-r-squared/ retrieved 16 May 2014
 #' @export
 
 #' @title Excel-like R^2 function
