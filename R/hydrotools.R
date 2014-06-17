@@ -46,10 +46,17 @@ wymonth = function(t){
 }
 
 #' @export
-wyday <- function(t) {
+wyday = function(t){
+    require(lubridate)
+    t = as.Date(t)
+    as.integer(t - as.Date(paste0(wateryear(t)-1, "-09-30")))
+}
+#' @export
+old_wyday <- function(t) {
   require(lubridate)
   as.integer(as.POSIXct(t) - as.POSIXct(paste0(wateryear(t)-1, "-10-01")))
 }
+
                            
 #' @export
 wymonth.abb = month.abb[c(10:12,1:9)]
