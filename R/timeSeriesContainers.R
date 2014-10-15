@@ -56,15 +56,33 @@ tsc.to.dt <- function(tsc, ...){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
+xts.to.tsc <- function(tsObject, ..., ePart=NULL, interval=NULL, fillData=FALSE, protoTSC=NULL){
   ## Fill empty time slots in tsObject
-  times = index(tsObject)
-  fullTimes = seq(min(times), max(times), by=deltat(tsObject))
-  blankTimes = fullTimes[!(fullTimes %in% times)]
-  empties = xts(rep(J("hec/script/Constants")$UNDEFINED, length(blankTimes)), order.by=blankTimes)
-  colnames(empties) = colnames(tsObject)
-  tsObject = rbind(tsObject, empties)
-  
+  times = as.POSIXct(index(tsObject))
+  deltas =  diff(as.integer(times)/60)
+  if(!is.null(ePart)){
+    interval = TSC_INTERVALS[ePart]
+  } else {
+    ePart = names(TSC_INTERVALS[TSC_INTERVALS == interval])[1] # TSC_INTERVALS[[as.character(metadata$interval)]] 
+  }
+  if(is.null(interval)){
+    if(max(deltas) <= 25*3600){ ## Less than one day (25 for DST/StdT change), we can count on this to be pretty accurate
+      interval = deltat(tsObject)/60
+    } else {
+      if(any(TSC_INTERVALS %in% deltas)){
+        interval = TSC_INTERVALS[TSC_INTERVALS %in% deltas][1]
+      } else {
+        interval = 0
+      }  
+    }
+  }
+  if(fillData & interval > 0 & interval < 25*3600){
+    fullTimes = seq(min(times), max(times), by=deltat(tsObject))
+      blankTimes = fullTimes[!(fullTimes %in% times)]
+      empties = xts(rep(J("hec/script/Constants")$UNDEFINED, length(blankTimes)), order.by=blankTimes)
+      colnames(empties) = colnames(tsObject)
+      tsObject = rbind(tsObject, empties)
+  }
   ## Configure slots for TimeSeriesContainer object
   times = as.integer(index(tsObject))/60 + 2209075200/60
   values = as.numeric(tsObject)
@@ -73,13 +91,14 @@ xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
     values = .jarray(values, contents.class="java/lang/Double"),
     endTime = max(times),
     startTime = min(times),
-    interval = deltat(tsObject)/60,
     numberValues = length(values),
     storedAsdoubles = TRUE,
     modified=FALSE,
     fileName="",
     ...
   )
+  metadata$interval = interval
+  
   dssMetadata = attr(tsObject, "dssMetadata")
   for(mdName in colnames(dssMetadata)){
     if(mdName %in% names(metadata)){
@@ -92,7 +111,6 @@ xts.to.tsc <- function(tsObject, ..., protoTSC=NULL){
   }
   ## TODO: pull from protoTSC if required
   
-  ePart = list("1440"="1DAY", "60"="1HOUR", "15"="15MIN", "1"="1MIN")[[as.character(metadata$interval)]]
   dPart = paste0("01JAN", year(first(index(tsObject))))
   metadata$fullName = paste("", metadata$watershed, metadata$location, metadata$parameter, dPart, ePart, metadata$version, "", sep="/")
   tsc = .jnew("hec/io/TimeSeriesContainer")

@@ -66,7 +66,7 @@ OLDgetPaths <- function(file, ...){
 #' 
 #' \code{pathByParts} functions use the format "\code{A=PATTERN B=PATTERN}" for their search string.  Parts not specified will be searched for as a wildcard
 #' 
-#' See Page 8-32 of the HEC-DSSVue manual for further examples on the wildcard methods.  The "@" character cannot be used as a wildcard.  
+#' See Page 8-32 of the HEC-DSSVue manual for further examples on the wildcard methods.  The "at" character cannot be used as a wildcard.  
 #' 
 #' Custom search functions can be written to take the first two parameters as the full list of paths as a character vector, and a search pattern string.  
 #' The search pattern string can be provided as an empty string with other parameters provided for the search. \code{splitPattern} will split a path by parts pattern into search terms, and \code{separatePathParts} will split a full path pattern into search terms.
@@ -161,7 +161,7 @@ fullPathByWildcard <- function(paths, pattern){
 
 #' @export 
 pathByPartsWildcard <- function(paths, pattern){
-  ## TODO:  Replace "@" in pattern with "*", to match HEC wildcard set
+  ## TODO:  Replace "\@" in pattern with "*", to match HEC wildcard set
   return(pathByPartsRegex(paths, pattern.parts=splitPattern(pattern, to.regex=T)))
 }
 

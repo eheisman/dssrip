@@ -12,8 +12,8 @@
 #'   this R package, the user should obtain it from an install of HEC-DSSVue.  Further reasons to 
 #'   use .jinit include being able to initialize the JVM in the same manner as HEC-DSSVue would, 
 #'   adding the appropriate jars and DLLs as start up options.
-#' @TODO Implement so that dssrip can be loaded after other rJava based packages
-#' @TODO Quiet DSS status messages
+#' TODO Implement so that dssrip can be loaded after other rJava based packages
+#' TODO Quiet DSS status messages
 #' @param as.package If true, uses .jpackage instead of .jinit for better encapsulation of module. (Buggy!)
 #' @param dss_location Specify location of DSSVue libraries if not in default location.
 #' @param platform Specify platform, used in determining default DSS location.
@@ -102,7 +102,6 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   }
 }
 
-
 TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
 minutes = c(1,2,3,4,5,6,10,12,15,20,30)
 hours = c(1,2,3,4,6,8,12)
@@ -120,6 +119,7 @@ openTestFile <- function(){
 }
 
 ## Convenience function for viewing a DSS file.  DOES NOT WORK
+#' @export
 newDSSVueWindow <- function(file=NULL){
   mw = .jcall("hec/dssgui/ListSelection",
               returnSig="Lhec/dssgui/ListSelection;",

@@ -10,4 +10,6 @@
   assign("pdcFieldsDF", fieldsDF(.jnew("hec/io/PairedDataContainer")), javaObjs)
   assign("hecJavaObjectsDB", javaObjs, envir=parent.env(environment()))
   assign("DSS_CONSTANTS", J("hec/script/Constants"), envir=parent.env(environment()))
+  assign("TSC_INTERVALS", TSC_INTERVALS, envir=parent.env(environment()))
+  assign("TSC_TYPES", TSC_TYPES, envir=parent.env(environment()))
 }
