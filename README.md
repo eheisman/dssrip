@@ -9,9 +9,9 @@ Provided under MIT license without warranty.
 
 #Install Instructions:
 
-To install, run:
+To install, use the ```devtools``` package's ```install_github``` function:
 ```
-devtools::install_github("dss-rip","eheisman",args="--no-multiarch")
+devtools::install_github("eheisman/DSS-Rip",args="--no-multiarch")
 ```
 
 ```args='--no-multiarch'``` is required on a 64-bit computer to resolve 32-bit/64-bit compatibility issues.
@@ -19,6 +19,9 @@ devtools::install_github("dss-rip","eheisman",args="--no-multiarch")
 Make sure a copy of DSSVue is installed to it's default location for your system.
 
 #Usage:
+
+Load ```dssrip``` as a library.  Yes, it's a different name than the github repository.
+
 ```myFile opendss(dssFilename)``` to open a DSS file or to create a new one.  
 
 From the returned ```hecdss``` object, either accompanying functions can be used to read data, or DSSVue's Jython API can be called.  See Chapter 8 of the DSS-Vue manual for a detailed list of Jython API calls.
