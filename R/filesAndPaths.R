@@ -172,7 +172,7 @@ fullPathByRegex <- function(paths, pattern){
 
 #' @export 
 separatePathParts <- function(paths){
-  parts.df = data.frame(rbind(do.call(rbind, str_split(paths, fixed("/")))[,2:7]))
+  parts.df = data.frame(rbind(do.call(rbind, str_split(paths, fixed("/")))[,2:7]), stringsAsFactors=FALSE)
   colnames(parts.df) = toupper(letters[1:6])
   parts.df$PATH = paths
   return(parts.df)
