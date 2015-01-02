@@ -99,7 +99,7 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     #.jcall("java/lang/System", returnSig='V', method="setOut", nullPrintStream)
     #opt 3: See heclib programmers manual for this trick.
     messageLevel = 2 # only print errors
-    .jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLEVEL', ' ', .jclass.int(messageLevel))
+    .jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLEVEL', ' ', as.integer(messageLevel))
   }
 }
 
