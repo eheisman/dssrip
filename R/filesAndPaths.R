@@ -178,6 +178,33 @@ separatePathParts <- function(paths){
   return(parts.df)
 }
 
+# This should replace/be merged with separatePathParts
+# Adds ability to convert paths to have blank d-parts for reading 'condensed' records.
+#' @export
+pathsToDataFrame = function(paths, simplify=TRUE, letterLabels=FALSE){
+    labels = c("WATERSHED", "LOCATION", "PARAMETER", "DATERANGE", "INTERVAL", "VERSION")
+    if(letterLabels & !simplify){
+        labels = paste0(LETTERS[1:6], ".PART")
+    }
+    pathsDF = ldply(paths, function(path){
+        splitPath = str_split(path, fixed("/"))[[1]]
+        splitPath = splitPath[2:7]
+        names(splitPath) = labels
+        splitPath[["PATH"]] = path
+        return(splitPath)
+    })
+    if(simplify){
+        ## merge paths with same parts, except for D. good for getTSC for the whole range
+        pathsDF = ddply(pathsDF, labels[c(1:3,5:6)], summarize, 
+                        FIRST.PATH = first(DATERANGE),
+                        LAST.PATH = last(DATERANGE),
+                        # TODO: fix the next line so it works with both full labels and letter labels
+                        PATH=first(sprintf("/%s/%s/%s//%s/%s/", WATERSHED, LOCATION, PARAMETER, INTERVAL, VERSION)))
+    }
+    return(pathsDF)
+}
+
+
 #' @export 
 pathByPartsRegex <- function(paths, pattern, pattern.parts=NULL){
   parts.df = separatePathParts(paths)
