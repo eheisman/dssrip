@@ -80,7 +80,7 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     }
   } else {
     libdir = paste0(dss_location, "lib", path.sep)
-    #dyn.load(lib)
+    #dyn.load(lib)z
     .jpackage(pkgname, lib.loc, morePaths=jars)
     ## Add javaHeclib.dll to loaded libraries.
     #.jcall("java/lang/System", returnSig='V', method="load", lib)
@@ -99,95 +99,95 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     #.jcall("java/lang/System", returnSig='V', method="setOut", nullPrintStream)
     #opt 3: See heclib programmers manual for this trick.
     messageLevel = 2 # only print errors
-    .jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLEVEL', ' ', as.integer(messageLevel))
+    try(.jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLEVEL', ' ', as.integer(messageLevel))), silent=TRUE)
+    }
   }
-}
-
-TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
-minutes = c(1,2,3,4,5,6,10,12,15,20,30)
-hours = c(1,2,3,4,6,8,12)
-TSC_INTERVALS = c(minutes, 60*hours, 60*24*c(1,7,10,15,30,365), rep(0,5))
-## Irregular appears to have interval of 0, not -1
-names(TSC_INTERVALS) = c(paste0(minutes, "MIN"),
-                         paste0(hours, "HOUR"),
-                         "1DAY","1WEEK","TRI-MONTH","SEMI-MONTH", "1MON","1YEAR",
-                         paste0("IR-",c("DAY","MON","YEAR","DECADE","CENTURY")))
-
-
-## Only useful when working in package directory!
-openTestFile <- function(){
-  opendss("./extdata/test.dss")
-}
-
-## Convenience function for viewing a DSS file.  DOES NOT WORK
-#' @export
-newDSSVueWindow <- function(file=NULL){
-  mw = .jcall("hec/dssgui/ListSelection",
-              returnSig="Lhec/dssgui/ListSelection;",
-              method="createMainWindow")
-  mw = .jnew("hec/dssgui/ListSelection")
-  mw.show()
-  if(!is.null(file)){
-    mw.openDSSFile(file)
+  
+  TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
+  minutes = c(1,2,3,4,5,6,10,12,15,20,30)
+  hours = c(1,2,3,4,6,8,12)
+  TSC_INTERVALS = c(minutes, 60*hours, 60*24*c(1,7,10,15,30,365), rep(0,5))
+  ## Irregular appears to have interval of 0, not -1
+  names(TSC_INTERVALS) = c(paste0(minutes, "MIN"),
+                           paste0(hours, "HOUR"),
+                           "1DAY","1WEEK","TRI-MONTH","SEMI-MONTH", "1MON","1YEAR",
+                           paste0("IR-",c("DAY","MON","YEAR","DECADE","CENTURY")))
+  
+  
+  ## Only useful when working in package directory!
+  openTestFile <- function(){
+    opendss("./extdata/test.dss")
   }
-  return(mw)
-}
-
-## used to help with introspection on Java Objects
-sigConversions = list(boolean="Z", byte="B", char="C", 
-                      short="T", void="V", int="I", 
-                      long="J", float="F", double="D")
-fieldsDF <- function(jObject){
-  require(plyr)
-  fields = ldply(.jfields(jObject), function(x) data.frame(FULLNAME=x, 
-                                                           SHORTNAME=last(str_split(x, fixed("."))[[1]]), 
-                                                           CLASS=str_split(x, fixed(" "))[[1]][2], 
-                                                           stringsAsFactors=FALSE))
-  fields$SIGNATURE = llply(fields$CLASS, function(x){
-    out = str_replace_all(x, "\\[\\]", "")
-    if(out %in% names(sigConversions)){
-      out = sigConversions[[out]]
-    } else {
-      out = paste0("L", str_replace_all(out, fixed("."), "/"), ";")
+  
+  ## Convenience function for viewing a DSS file.  DOES NOT WORK
+  #' @export
+  newDSSVueWindow <- function(file=NULL){
+    mw = .jcall("hec/dssgui/ListSelection",
+                returnSig="Lhec/dssgui/ListSelection;",
+                method="createMainWindow")
+    mw = .jnew("hec/dssgui/ListSelection")
+    mw.show()
+    if(!is.null(file)){
+      mw.openDSSFile(file)
     }
-    ## If vector, add [
-    if(grepl(fixed("\\[\\]"), x)){
-      out = paste0("[", out)
-    }
-    return(out)
-  })
-  return(fields)
-}
-
-
-
-
-#' getMetadata get metadata from a tsc java object 
-#' 
-#' get metadata from a tsc java object 
-#' 
-#' Long Description
-#' 
-#' @return data.frame containing metadata 
-#' @note NOTE
-#' @author Evan Heisman
-#' @export 
-getMetadata <- function(tsc, colnamesSource="parameter"){
-  require(stringr)
-  require(plyr)
-  tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
-  metadata = dlply(tscFieldsDF, "SHORTNAME", function(df){
-    #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
-    if(df$SHORTNAME %in% c("values", "times", "modified", "quality")) {
-      return()
-    }
-    val = .jfield(tsc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE))
-    if(.jnull() == val){
-      return(NA)
-    }
-    return(val)
-  })
-  metadata = metadata[!(names(metadata) %in% c("values", "times", "modified", "quality"))]
-
-  return(metadata)
-}
+    return(mw)
+  }
+  
+  ## used to help with introspection on Java Objects
+  sigConversions = list(boolean="Z", byte="B", char="C", 
+                        short="T", void="V", int="I", 
+                        long="J", float="F", double="D")
+  fieldsDF <- function(jObject){
+    require(plyr)
+    fields = ldply(.jfields(jObject), function(x) data.frame(FULLNAME=x, 
+                                                             SHORTNAME=last(str_split(x, fixed("."))[[1]]), 
+                                                             CLASS=str_split(x, fixed(" "))[[1]][2], 
+                                                             stringsAsFactors=FALSE))
+    fields$SIGNATURE = llply(fields$CLASS, function(x){
+      out = str_replace_all(x, "\\[\\]", "")
+      if(out %in% names(sigConversions)){
+        out = sigConversions[[out]]
+      } else {
+        out = paste0("L", str_replace_all(out, fixed("."), "/"), ";")
+      }
+      ## If vector, add [
+      if(grepl(fixed("\\[\\]"), x)){
+        out = paste0("[", out)
+      }
+      return(out)
+    })
+    return(fields)
+  }
+  
+  
+  
+  
+  #' getMetadata get metadata from a tsc java object 
+  #' 
+  #' get metadata from a tsc java object 
+  #' 
+  #' Long Description
+  #' 
+  #' @return data.frame containing metadata 
+  #' @note NOTE
+  #' @author Evan Heisman
+  #' @export 
+  getMetadata <- function(tsc, colnamesSource="parameter"){
+    require(stringr)
+    require(plyr)
+    tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
+    metadata = dlply(tscFieldsDF, "SHORTNAME", function(df){
+      #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
+      if(df$SHORTNAME %in% c("values", "times", "modified", "quality")) {
+        return()
+      }
+      val = .jfield(tsc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE))
+      if(.jnull() == val){
+        return(NA)
+      }
+      return(val)
+    })
+    metadata = metadata[!(names(metadata) %in% c("values", "times", "modified", "quality"))]
+    
+    return(metadata)
+  }
