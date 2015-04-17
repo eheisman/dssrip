@@ -126,7 +126,7 @@ hydro_flow_trans <- function(...){
 #' @export
 hydro_prob_breaks <- function(...){
   return(function(x){
-    magnitude = ceiling(abs(log10(min(x))))
+    magnitude = ceiling(abs(log10(min(min(x),1-max(x)))))
     return(probBreaks(maxLevel=magnitude, ...))
   })
 }
