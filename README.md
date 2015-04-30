@@ -22,7 +22,7 @@ Make sure a copy of DSSVue is installed to it's default location for your system
 
 Load ```dssrip``` as a library.  Yes, it's a different name than the github repository.
 
-```myFile opendss(dssFilename)``` to open a DSS file or to create a new one.  
+```myFile = opendss(dssFilename)``` to open a DSS file or to create a new one.  
 
 From the returned ```hecdss``` object, either accompanying functions can be used to read data, or DSSVue's Jython API can be called.  See Chapter 8 of the DSS-Vue manual for a detailed list of Jython API calls.
 
@@ -74,6 +74,8 @@ For assessing the fit of hydrologic models, the functions ```nash.sutcliff```, `
 ```hydro_flow_trans``` and ```hydro_prob_trans``` can be used with ```ggplot```'s ```scale_continuous``` for axes to automatically apply flowBreaks and probBreaks.
 
 # An example:
+
+## Frequency curve
 annual_peaks_data.dss contains a record with a USGS flow frequency record.
 
 ```r
@@ -91,4 +93,21 @@ ggplot(peaks, aes(y=FLOW, x=weibullProbs(FLOW))) + geom_point() +
   scale_y_continuous(trans=hydro_flow_trans()) + 
   scale_x_continuous(trans=hydro_prob_trans(lines=c(1,2,5), labels=c(1,2,5), byPeriod=TRUE)) + 
   stat_smooth(method="glm", family=gaussian(link="log"))
+```
+
+Quick and dirty monthly summary hydrograph
+test.dss contains a daily flow record downloaded with the USGS Import tool in DSSVue for the Delaware River at Trenton, NJ.  This isn't the best example of a summary hydrograph, and definitely not the best way to do it, but gives an idea of seasonality.
+```r
+require(dssrip)
+require(ggplot2) # for plotting and fortify command
+mydssfile = opendss("F:/test.dss")
+
+delawareflows = getFullTSC(mydssfile, getPaths(mydssfile, "A=DELAWARE RIVER B=TRENTON NJ C=FLOW"))
+plot(delawareflows)
+## uses fortify.xts from ggplot, creates column for index.
+deflow = fortify(delawareflows)
+## Let's label months and assign them a WY order (October thru Sept)
+deflow$MONTH = factor(x=wymonth(deflow$Index), labels=wymonth.abb)
+## plot
+ggplot(deflow, aes(x=MONTH, y=FLOW, group=MONTH)) + geom_boxplot()
 ```
