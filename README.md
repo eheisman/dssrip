@@ -95,7 +95,7 @@ ggplot(peaks, aes(y=FLOW, x=weibullProbs(FLOW))) + geom_point() +
   stat_smooth(method="glm", family=gaussian(link="log"))
 ```
 
-Quick and dirty monthly summary hydrograph
+## Quick monthly summary hydrograph
 test.dss contains a daily flow record downloaded with the USGS Import tool in DSSVue for the Delaware River at Trenton, NJ.  This isn't the best example of a summary hydrograph, and definitely not the best way to do it, but gives an idea of seasonality.
 ```r
 require(dssrip)
