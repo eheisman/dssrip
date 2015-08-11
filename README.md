@@ -9,6 +9,8 @@ Provided under MIT license without warranty.
 
 #Install Instructions:
 
+If you haven't already, install the ```rJava```, ```ggplot2```,```plyr```, ```reshape2```, ```stringr```, and ```devtools``` packages.
+
 To install, use the ```devtools``` package's ```install_github``` function:
 ```
 devtools::install_github("eheisman/DSS-Rip",args="--no-multiarch")
