@@ -21,6 +21,7 @@ Depends:
 Suggests:
     lubridate,
     ggplot2,
-    scales
+    scales,
+    hydroutils
 License: MIT
 BugReports: heisman+dssripbugs@gmail.com
