@@ -20,9 +20,9 @@ devtools::install_github("eheisman/DSS-Rip",args="--no-multiarch")
 
 Make sure a copy of DSSVue is installed to it's default location for your system.
 
-#Usage:
+# Usage:
 
-Load ```dssrip``` as a library.  Yes, it's a different name than the github repository.
+Load ```dssrip``` as a library with ```require``` or ```library```.
 
 ```myFile = opendss(dssFilename)``` to open a DSS file or to create a new one.  
 
@@ -36,9 +36,9 @@ Several convenience functions for reading timeseries and paried data containers 
 
 ```getFullDT``` - similar to getFullTSC, but returns a data.table.
 
-```getColumnsByName``` - read PairedDataContainer to data.frame.
+```getColumnsByName``` - read a column from a PairedDataContainer.
 
-#Missing ```JAVA_HOME``` settings:
+# Missing ```JAVA_HOME``` settings:
 If you're trying to run DSSRip in 64-bit R, it will not work without a 64-bit javaHeclib.dll.
 
 Otherwise, if you only have 64-bit Java on your system, you can set DSS-Rip to call the JRE bundled with HEC-DSSVue.
@@ -51,15 +51,15 @@ Sys.setenv(JAVA_HOME="C:\\Program Files (x86)\\HEC\\HEC-DSSVue\\java")
 ```
 This fix may cause issues with other rJava based packages, so do this at your own risk.
 
-#TODO List:
+# TODO List:
 - Implement a 'safe' HecDss$get() method that handles a non-existent/'empty' path more gracefully, such as warn if null.
 - Implement write methods for ```TimeSeriesContainers``` (from ```xts``` or ```data.frame```) and ```PairedDataContainers``` (from ```data.frame```).
 
-#Known Issues:
+# Known Issues:
 - dssrip must be loaded before any other packages that require ```rJava``` so that dssrip can initialize a JVM with the correct options.  This isn't 'nice' behavior, but at the moment it is required.  This issue can be mostly resolved by loading dssrip before other packages that depend on ```rJava```, such as XLConnect.
 - Only works in 32-bit R, unless you have a 64-bit version of the DLL file to link to.
 - Time series import does not handle timezones well, xts objects often default to assuming the file is in GMT.  This may be a larger issue with how R handles timezones on Windows.
 - data.table and rJava both imported and have a naming conflict on the ```J()``` function.  At the moment the rJava version masks the data.table version, the reverse may be more useful.
 
-# Hydrotools
-The Hydroltools part of this package has been moved to it's own package, [hydroutils](http://github.com/eheisman/hydroutils).
+# Hydroutils
+The plotting and misc hydrology functions of this package has been moved to their own package, [hydroutils](http://github.com/eheisman/hydroutils).
