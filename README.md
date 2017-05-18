@@ -7,7 +7,7 @@ NOTE: ```dssrip``` only works in 32-bit R, as it relies on a 32-bit JVM which ca
 
 Provided under MIT license without warranty.
 
-#Install Instructions:
+# Install Instructions:
 
 If you haven't already, install the ```rJava```, ```ggplot2```,```plyr```, ```reshape2```, ```stringr```, and ```devtools``` packages.
 
@@ -38,18 +38,25 @@ Several convenience functions for reading timeseries and paried data containers 
 
 ```getColumnsByName``` - read a column from a PairedDataContainer.
 
-# Missing ```JAVA_HOME``` settings:
+## Missing ```JAVA_HOME``` settings and using a non-standard version of DSSVue:
 If you're trying to run DSSRip in 64-bit R, it will not work without a 64-bit javaHeclib.dll.
 
 Otherwise, if you only have 64-bit Java on your system, you can set DSS-Rip to call the JRE bundled with HEC-DSSVue.
 
-Set the following in your .Rprofile, or before you load dssrip:
+Set the following in your .Rprofile, or run before you install and/or load dssrip:
 
 ```
 options(dss_jre_location="C:\\Program Files (x86)\\HEC\\HEC-DSSVue\\java")
 Sys.setenv(JAVA_HOME="C:\\Program Files (x86)\\HEC\\HEC-DSSVue\\java")
 ```
 This fix may cause issues with other rJava based packages, so do this at your own risk.
+
+## For DSS installed elsewhere than Program files
+Set the following in your .Rprofile, or run before you install and/or load dssrip:
+```
+options(dss_location="C:\\programs\\HEC\\HEC-DSSVue2.1")
+options(dss_jre_location="C:\\programs\\HEC\\HEC-DSSVue2.1\\jre")
+```
 
 # TODO List:
 - Implement a 'safe' HecDss$get() method that handles a non-existent/'empty' path more gracefully, such as warn if null.
