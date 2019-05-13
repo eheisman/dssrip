@@ -64,7 +64,7 @@ options(dss_jre_location="C:\\programs\\HEC\\HEC-DSSVue2.1\\jre")
 
 # Known Issues:
 - dssrip must be loaded before any other packages that require ```rJava``` so that dssrip can initialize a JVM with the correct options.  This isn't 'nice' behavior, but at the moment it is required.  This issue can be mostly resolved by loading dssrip before other packages that depend on ```rJava```, such as XLConnect.
-- Only works in 32-bit R, unless you have a 64-bit version of the DLL file to link to.
+- Only works in 32-bit R, unless you have a 64-bit version of the DLL file to link to, such as those provided with the [HEC-WAT](https://www.hec.usace.army.mil/software/hec-wat/) software.
 - Time series import does not handle timezones well, xts objects often default to assuming the file is in GMT.  This may be a larger issue with how R handles timezones on Windows.
 - data.table and rJava both imported and have a naming conflict on the ```J()``` function.  At the moment the rJava version masks the data.table version, the reverse may be more useful.
 
