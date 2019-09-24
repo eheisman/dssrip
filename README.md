@@ -12,11 +12,17 @@ Provided under MIT license without warranty.
 If you haven't already, install the ```rJava```, ```ggplot2```,```plyr```, ```reshape2```, ```stringr```, and ```devtools``` packages.
 
 To install, use the ```devtools``` package's ```install_github``` function:
+
+For newer versions of R:
 ```
-devtools::install_github("eheisman/DSS-Rip",args="--no-multiarch")
+install_github("eheisman/dssrip",INSTALL_opts = "--no-multiarch")
+```
+For older versions of R (at least 3.4 and older):
+```
+devtools::install_github("eheisman/dssrip",args="--no-multiarch")
 ```
 
-```args='--no-multiarch'``` is required on a 64-bit computer to resolve 32-bit/64-bit compatibility issues.
+The ```'--no-multiarch'``` parameter is required on a 64-bit computer to force it to install only the current architecture.  If you do not have the options set to point to a version of the javaHeclib.dll file with the same architecture as the version of R that you are running, the install will fail.  If you need to use both 64-bit and 32-bit R, you will have to install it once for each version.
 
 Make sure a copy of DSSVue is installed to it's default location for your system.
 
@@ -39,7 +45,7 @@ Several convenience functions for reading timeseries and paried data containers 
 ```getColumnsByName``` - read a column from a PairedDataContainer.
 
 ## Missing ```JAVA_HOME``` settings and using a non-standard version of DSSVue:
-If you're trying to run DSSRip in 64-bit R, it will not work without a 64-bit javaHeclib.dll.
+If you're trying to run DSSRip in 64-bit R, it will not work without a 64-bit javaHeclib.dll.  Many recent HEC Java-based programs can provide this, although ```dssrip``` was mostly tested using the 32-bit library that came with DSSVue 2.0.  Newer versions may cause incompatibilities with the ```dssrip``` glue code.
 
 Otherwise, if you only have 64-bit Java on your system, you can set DSS-Rip to call the JRE bundled with HEC-DSSVue.
 
