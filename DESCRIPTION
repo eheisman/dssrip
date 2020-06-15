@@ -25,3 +25,4 @@ Suggests:
     hydroutils
 License: MIT
 BugReports: heisman+dssripbugs@gmail.com
+RoxygenNote: 7.1.0
