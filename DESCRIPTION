@@ -2,7 +2,7 @@ Package: dssrip
 Title: DSS R Interface Project
 Version: 0.1
 Date: 2013-06-28
-Architecture: i386
+Architecture: i386, x86_64
 Author: Evan A. Heisman, with contributions from Cameron Bracken
 Maintainer: Evan Heisman <heisman+dssrip@gmail.com>
 URL: http://github.com/eheisman/DSS-Rip
@@ -19,9 +19,6 @@ Depends:
     data.table,
     plyr
 Suggests:
-    lubridate,
-    ggplot2,
-    scales,
     hydroutils
 License: MIT
 BugReports: heisman+dssripbugs@gmail.com
