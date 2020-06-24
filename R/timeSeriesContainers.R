@@ -13,7 +13,7 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter"){
   metadata = getMetadata(tsc, colnamesSource=colnamesSource)
   
   ## TODO: fix tz="UTC" to use local if not specified in tsc's timezone parameter
-  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60, origin="1899-12-31 00:00", tz="UTC"), dssMetadata= as.data.frame(metadata))
+  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60, origin="1899-12-31 00:00", tz="UTC")) #, dssMetadata= as.data.frame(metadata))
   colnames(out) = metadata[[colnamesSource]]
   
   return(out)

@@ -15,7 +15,7 @@ To install, use the ```devtools``` package's ```install_github``` function.
 
 For newer versions of R:
 ```
-devtools::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch")
+devtools::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch", ref="tidyup")
 ```
 For older versions of R (at least 3.4 and older):
 ```

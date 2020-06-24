@@ -59,8 +59,8 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   }
   if(verboseLib) packageStartupMessage(sprintf("DSS Location is %s\n", dss_location))
   
-  jars = paste0(dss_location, path.sep, "jar", path.sep, c("hec", "heclib", "rma", "hecData"), ".jar")
-  require(rJava)
+  jars = paste0(dss_location, path.sep, "jar", path.sep, c("hec", "heclib", "rma", "hecData", "hec-dssvue-v3.0", "lookup", "help\\dssvueHelp"), ".jar")
+  #require(rJava)
   
   if(is.null(pkgname)){ ## Loading outside of onLoad function
     require(rJava)
@@ -79,15 +79,25 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
       }
     }
   } else {
+    require(rJava)
+    require(stringr)
+    require(xts)
     libdir = paste0(dss_location, "lib", path.sep)
     #dyn.load(lib)z
-    .jpackage(pkgname, lib.loc, morePaths=jars)
     ## Add javaHeclib.dll to loaded libraries.
     #.jcall("java/lang/System", returnSig='V', method="load", lib)
     Sys.setenv(PATH=paste0(Sys.getenv("PATH"), ";", dss_location, ";", libdir))
     lib = paste0(libdir, "javaHeclib.dll")
-    .jcall("java/lang/System", returnSig='V', method="load", lib)
-    .jcall("java/lang/System", returnSig='V', method="loadLibrary", "javaHeclib")
+    #libpath = paste0("-Djava.library.path=",libdir)
+    .jpackage(pkgname, lib.loc) #, jars=jars) #, java.parameters=libpath)
+    #.jcall("java/lang/System", returnSig='V', method="load", lib)
+    javaImport(packages = "java.lang")
+    propertyString = .jnew("java/lang/String","java.library.path")
+    libString = .jnew("java/lang/String",libdir)
+    .jcall("java/lang/System", returnSig='S', method="setProperty", propertyString, libString);
+    #.jcall("java/lang/System", returnSig='V', method="loadLibrary", "javaHeclib")
+    .jaddLibrary("javaHeclib", lib)
+    .jaddClassPath(jars)
   }
   if(quietDSS){
     ## None of the below work
@@ -173,6 +183,7 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
   #' @author Evan Heisman
   #' @export 
   getMetadata <- function(tsc, colnamesSource="parameter"){
+    EXCLUDE_FROM_METADATA = c("values", "times", "modified", "quality", "inotes")
     require(stringr)
     require(plyr)
     tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
@@ -181,13 +192,15 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
       if(df$SHORTNAME %in% c("values", "times", "modified", "quality")) {
         return()
       }
-      val = .jfield(tsc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE))
+      val = try(.jfield(tsc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE)), silent=T)
       if(.jnull() == val){
         return(NA)
       }
       return(val)
     })
-    metadata = metadata[!(names(metadata) %in% c("values", "times", "modified", "quality"))]
+    metadata = metadata[!(names(metadata) %in% EXCLUDE_FROM_METADATA)]
     
     return(metadata)
   }
+  
+  
