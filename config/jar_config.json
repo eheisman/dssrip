@@ -8,8 +8,9 @@
       "path.sep": "\\",
       "dss_location": "C:\\Programs\\HEC-DSSVue-v3.0.00.212",
       "jars": ["jar\\hec.jar", "jar\\rma.jar", "jar\\lookup.jar", "jar\\hec-dssvue-v3.0.jar"],
-      "libs": ["lib\\javaheclib.dll"],
-      "JAVA_HOME": "\\java"
+      "libs": ["lib"],
+      "lib.ext": "dll",
+      "JAVA_HOME": "java"
     },
     {
       "name": "dssvue2-win86",
@@ -18,8 +19,9 @@
       "platform": "x86-mingw32",
       "path.sep": "\\",
       "jars": ["jar\\hec.jar", "jar\\rma.jar"],
-      "libs": ["lib\\javaheclib.dll"],
-      "JAVA_HOME": "\\java"
+      "libs": ["lib"],
+      "lib.ext": "dll",
+      "JAVA_HOME": "java"
     },
     {
       "name": "wat10-windows-x86_64",
@@ -28,7 +30,8 @@
       "platform": "x86_64-w64-mingw32",
       "path.sep": "\\",
       "jars": ["jar\\hec.jar", "jar\\rma.jar", "jar\\lookup.jar"],
-      "libs": ["lib\\javaheclib.dll"],
+      "libs": ["lib"],
+      "lib.ext": "dll",
       "JAVA_HOME": "..\\javaRuntime64"
     },
     {
@@ -38,7 +41,8 @@
       "platform": "x86-mingw32",
       "path.sep": "\\",
       "jars": ["jar\\hec.jar", "jar\\rma.jar"],
-      "libs": ["lib32\\javaheclib.dll"],
+      "libs": ["lib32\\"],
+      "lib.ext": "dll",
       "JAVA_HOME": "..\\javaRuntime"
     }
   ]

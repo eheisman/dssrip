@@ -14,90 +14,49 @@
 #'   adding the appropriate jars and DLLs as start up options.
 #' TODO Implement so that dssrip can be loaded after other rJava based packages
 #' TODO Quiet DSS status messages
-#' @param as.package If true, uses .jpackage instead of .jinit for better encapsulation of module. (Buggy!)
-#' @param dss_location Specify location of DSSVue libraries if not in default location.
-#' @param platform Specify platform, used in determining default DSS location.
-#' @param quietDSS - don't show 'Z' messages during opening, reading, and writing to a file.  Experimental.
-#' @param parameters Options string to pass to JVM.
+#' @param quietDSS - if true, don't show 'Z' messages during opening, reading, and writing to a file.
+#' @param parameters list of options string to pass to JVM.
+#' @param setJavaLoc - override Java location with one in config
+#' @param verbose - set to true for debuggering
 #' @return JVM initialization status - 0 if successful, positive for partial initialization, negative for failure.  See ?.jinit 
-initialize.dssrip = function(pkgname=NULL, lib.loc,
-                             dss_location=getOption("dss_location"), 
-                             dss_jre=getOption("dss_jre_location"),
-                             platform=NULL, quietDSS=T, verboseLib=F, parameters=NULL, ...){
+initialize.dssrip2 = function(pkgname=NULL, quietDSS=T, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=FALSE, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
-  
-  ## TODO:  Add check if DSSRip is already initialized, exit function and return nothing 
-  ##        if not "force.reinit=T" with warning message
-  
-  if(is.null(platform)){
-    platform = tolower(Sys.info()[["sysname"]])
-  }
-  path.sep = "/"
-  library.ext = ".so"
-  if(platform == "windows"){
-    path.sep = "\\"
-    library.ext = ".dll"
-  }
+
+  require(rJava)
+  require(stringr)
+  require(xts)
+    
+  config = dssConfig()
+  dss_location = config$dss_location # avoid using this if dssConfig returns value needed
+  if(verbose) packageStartupMessage(sprintf("DSS Location is %s\n", dss_location))
+  jars = config$jars
+  libs = config$libs
+  java = config$java
+  config = config$config
+  path.sep = config$path.sep
+  lib.ext = config$lib.ext
+  #library.ext = config$library.ext
   
   ## Set JRE location
-  if(!is.null(dss_jre)){
-    Sys.setenv(JAVA_HOME=dss_jre)
-  } #else {
-  #   if(version$arch=="x86_64"){
-  #     Sys.setenv(JAVA_HOME="")
-  #   }
-  # }
-  if(verboseLib) packageStartupMessage(sprintf("JRE location is %s\n", Sys.getenv("JAVA_HOME")))
-  
-  ## Set DSS location
-  if(is.null(dss_location)){
-    if(platform == "windows"){
-      dss_location = paste0(Sys.getenv("ProgramFiles(x86)"), path.sep, "HEC", path.sep, "HEC-DSSVue")
-    } else {
-      dss_location = Sys.getenv("DSS_HOME")
-    }
+  if(setJavaLoc){
+    Sys.setenv(JAVA_HOME=java)
   }
-  if(verboseLib) packageStartupMessage(sprintf("DSS Location is %s\n", dss_location))
+  if(verbose) packageStartupMessage(sprintf("JRE location is %s\n", Sys.getenv("JAVA_HOME")))
+
   
-  jars = paste0(dss_location, path.sep, "jar", path.sep, c("hec", "heclib", "rma", "hecData", "hec-dssvue-v3.0", "lookup", "help\\dssvueHelp"), ".jar")
-  #require(rJava)
+  # is this necessary?
+  #Sys.setenv(PATH=paste0(Sys.getenv("PATH"), ";", dss_location, ";", libdir))
   
-  if(is.null(pkgname)){ ## Loading outside of onLoad function
-    require(rJava)
-    require(stringr)
-    require(xts)
-    libs = paste0("-Djava.library.path=", dss_location, path.sep, "lib", path.sep)
-    if(verboseLib) packageStartupMessage(str_trim(paste(libs,parameters)))
-    
-    #LOGS='-Dlogfile.directory="%APPDATA%/HEC/HEC-DSSVue/logs" -DLOGFILE="%APPDATA%/HEC/HEC-DSSVUE/logs/HEC-DSSVue.log" -DCACHE_DIR="%APPDATA%/HEC/HEC-DSSVue/pythonCache"'
-    #MEMPARAMS="-ms256M -mx2000M"
-    .jinit(classpath=jars, parameters=str_trim(paste(libs,parameters)), ...)
-    #.jaddClassPath(jars)
-    if(verboseLib){
-      for(jpath in .jclassPath()){
-        packageStartupMessage(jpath)
-      }
-    }
-  } else {
-    require(rJava)
-    require(stringr)
-    require(xts)
-    libdir = paste0(dss_location, "lib", path.sep)
-    #dyn.load(lib)z
-    ## Add javaHeclib.dll to loaded libraries.
-    #.jcall("java/lang/System", returnSig='V', method="load", lib)
-    Sys.setenv(PATH=paste0(Sys.getenv("PATH"), ";", dss_location, ";", libdir))
-    lib = paste0(libdir, "javaHeclib.dll")
-    #libpath = paste0("-Djava.library.path=",libdir)
-    .jpackage(pkgname, lib.loc) #, jars=jars) #, java.parameters=libpath)
-    #.jcall("java/lang/System", returnSig='V', method="load", lib)
-    javaImport(packages = "java.lang")
-    propertyString = .jnew("java/lang/String","java.library.path")
-    libString = .jnew("java/lang/String",libdir)
-    .jcall("java/lang/System", returnSig='S', method="setProperty", propertyString, libString);
-    #.jcall("java/lang/System", returnSig='V', method="loadLibrary", "javaHeclib")
-    .jaddLibrary("javaHeclib", lib)
-    .jaddClassPath(jars)
+  # initialize JVM/rJava
+  .jpackage(pkgname, lib.loc) #, jars=jars) #, java.parameters=libpath)
+  #.jcall("java/lang/System", returnSig='V', method="load", lib)
+  # is this necessary?
+  javaImport(packages = "java.lang")
+  propertyString = .jnew("java/lang/String","java.library.path")
+  libString = .jnew("java/lang/String", libs[1])
+  .jcall("java/lang/System", returnSig='S', method="setProperty", propertyString, libString);
+  .jaddLibrary("javaHeclib", paste0(libs[0], path.sep, "javaHeclib.", "libExt"))
+  .jaddClassPath(jars)
   }
   if(quietDSS){
     ## None of the below work
@@ -109,46 +68,81 @@ initialize.dssrip = function(pkgname=NULL, lib.loc,
     #.jcall("java/lang/System", returnSig='V', method="setOut", nullPrintStream)
     #opt 3: See heclib programmers manual for this trick.
     messageLevel = 2 # only print errors
-    try(.jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLEVEL', ' ', as.integer(messageLevel)), silent=TRUE)
-    }
+    #try(, silent=TRUE)
+    .jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLEVEL', ' ', as.integer(messageLevel))
   }
+}
 
 
-loadConfig = function(configFile, platform, allowedStates=c("tested"), dss_jar_location=NULL){
+#' @title DSS-Rip Initalization Options
+#' @author Evan Heisman
+#' @description
+#' Starts a rJava JVM with configuration for DSS-Vue's jar and dll files.
+#' 
+#' @details
+#' as.package is an experimental parameter for calling this as part of the onLoad function as part
+#'   of the DSS-Rip package.  This is the prefered method for an R package, but not yet functional
+#'   for this.  The best practice is to load the DSS-Rip package, and call initialize.dssrip with
+#'   as.package=FALSE, the default value.  Either the 'nativeLibrary' parameter for .jpackage, or
+#'   as a dyn.load, would be the place to load javaHeclib.dll, but rather than distribute it with 
+#'   this R package, the user should obtain it from an install of HEC-DSSVue.  Further reasons to 
+#'   use .jinit include being able to initialize the JVM in the same manner as HEC-DSSVue would, 
+#'   adding the appropriate jars and DLLs as start up options.
+#' TODO Implement so that dssrip can be loaded after other rJava based packages
+#' TODO Quiet DSS status messages
+#' @param configFileName filename of configurations to load, defaults to the one in this package.
+#' @param defaultConfig name of default configuration to use; "none" will allow config file to specify a prefered config.
+#' @param allowedStates only use configurations matching this state; defaults to "tested"
+#' @param override_dss_location if set, forces using a particular location for dss jar files.
+dssConfig = function(configFileName="./config/jar_config.json", 
+                     defaultConfig="none",
+                     allowedStates=c("tested"), 
+                     override_dss_location=options()[["override_dss_location"]]){
+  # libraries needed
   require(rjson)
+  require(stringr)
+  
+  platform=R.Version()$platform
   # read jar config file and match first platform and allowed states with files that exist
-  configfile = rjson::fromJSON(file="./config/jar_config.json", unexpected.escape="keep", simplify=TRUE)
-  defaultConfig = "none"
-  if(!("default_config" %in% names(configs))){
-    defaultConfig = configs$default_config
+  configfile = rjson::fromJSON(file=configFileName, simplify=TRUE)
+  if(defaultConfig == "none" & ("default_config" %in% names(configfile))){
+    defaultConfig = configfile$default_config
   }
   for(config in configfile$configs){
-    if(config$name == defaultConfig){
-      # found the specified default
-      break
+    # don't know this yet
+    foundJars = FALSE
+    foundConfig = FALSE
+    
+    # check files exist in dss_location
+    if(is.null(override_dss_location)){
+      dss_location = config$dss_location
+    } else {
+      dss_location = override_dss_location
     }
-    # else check platform and files exist
-    vers = R.Version()
-    dss_location = config$dss_location
     # add path.sep if needed
-    if(stringr::str_sub(dss_location, -1) != config$path.sep){
+    if(str_sub(dss_location, -1) != config$path.sep){
       dss_location = paste0(dss_location, config$path.sep)
     }
-    
     jarList = paste0(dss_location, config$jars)
     libList = paste0(dss_location, config$libs)
-    jre_location = paste0(dss_location, config$JAVA_HOME)
-    if(all(file.exists(jarList)) & all(file.exists(libList))){
-      # found all jars and files
-      foundJars = TRUE
+    javaLocation = paste0(dss_location, config$JAVA_HOME)
+
+    matchPlatform = config$platform == platform # use only if this is true
+    foundJars = (all(file.exists(jarList)) & all(file.exists(libList))) # check if these exists
+    isDefaultConfig = config$name == defaultConfig # use this if true
+    isAllowedState = config$state %in% allowedStates # only use if allowed state
+    if(matchPlatform & (foundJars | isDefaultConfig) & isAllowedState){
+      foundConfig = TRUE
       break
     }
+    # else go to the next one
     
   }
-  if(!foundJars | length(jarList) == 0 | length(libList) == 0){
-    errorCondition("Could not find any config with matching jars and libraries.")
+  # check that the found config will work?
+  if(!foundConfig | length(jarList) == 0 | length(libList) == 0){
+    stop("Could not find any config with matching jars and libraries.")
   }
-  return(list(jars=jarList, libs=libList, JAVA_HOME=jre_location))
+  return(list(dss_location=dss_location, jars=jarList, libs=libList, java=javaLocation, config=config))
 }
 
 
