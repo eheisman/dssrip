@@ -1,7 +1,10 @@
 TODO List:
 ==========
-- Implement a 'safe' HecDss$get() method that handles a non-existing path more gracefully.
-- Implement write methods for TSCs and PDCs.
+- Implement a 'safe' wrapper for the HecDss$get() method that handles a non-existing path more gracefully.
+- Remove data.table methods
+- Add method to read whole paired data record into single dataframe, not by columns
+- Clean up init function; add "jarfinder" logic to point to right set of jar files.
+
 
 Qs for HEC:
 ===========

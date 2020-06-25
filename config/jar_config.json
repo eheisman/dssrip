@@ -1,0 +1,45 @@
+{
+  "configs": [
+    {
+      "name": "dssvue3-win64",
+      "state": "tested",
+      "notes": "this is the best supported configuration",
+      "platform": "x86_64-w64-mingw32",
+      "path.sep": "\\",
+      "dss_location": "C:\\Programs\\HEC-DSSVue-v3.0.00.212",
+      "jars": ["jar\\hec.jar", "jar\\rma.jar", "jar\\lookup.jar", "jar\\hec-dssvue-v3.0.jar"],
+      "libs": ["lib\\javaheclib.dll"],
+      "JAVA_HOME": "\\java"
+    },
+    {
+      "name": "dssvue2-win86",
+      "state": "untested",
+      "dss_location": "C:\\Program Files (x86)\\HEC\\DSSVue",
+      "platform": "x86-mingw32",
+      "path.sep": "\\",
+      "jars": ["jar\\hec.jar", "jar\\rma.jar"],
+      "libs": ["lib\\javaheclib.dll"],
+      "JAVA_HOME": "\\java"
+    },
+    {
+      "name": "wat10-windows-x86_64",
+      "state": "tested",
+      "dss_location": "C:\\Program Files (x86)\\HEC\\HEC-WAT\\1.0\\HEC-WAT",
+      "platform": "x86_64-w64-mingw32",
+      "path.sep": "\\",
+      "jars": ["jar\\hec.jar", "jar\\rma.jar", "jar\\lookup.jar"],
+      "libs": ["lib\\javaheclib.dll"],
+      "JAVA_HOME": "..\\javaRuntime64"
+    },
+    {
+      "name": "wat10-windows-x86",
+      "state": "untested",
+      "dss_location": "C:\\Program Files (x86)\\HEC\\HEC-WAT\\1.0\\HEC-WAT",
+      "platform": "x86-mingw32",
+      "path.sep": "\\",
+      "jars": ["jar\\hec.jar", "jar\\rma.jar"],
+      "libs": ["lib32\\javaheclib.dll"],
+      "JAVA_HOME": "..\\javaRuntime"
+    }
+  ]
+}

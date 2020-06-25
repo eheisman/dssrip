@@ -1,7 +1,7 @@
 Package: dssrip
 Title: DSS R Interface Project
-Version: 0.1
-Date: 2013-06-28
+Version: 0.3
+Date: 2020-06-26
 Architecture: i386, x86_64
 Author: Evan A. Heisman, with contributions from Cameron Bracken
 Maintainer: Evan Heisman <heisman+dssrip@gmail.com>
@@ -10,16 +10,16 @@ Description: A wrapper for the HEC-DSSVue program's 'Jython' API, allowing an
     interface between R and many common hydrologic models.  In order to use
     this package, a current version of HEC-DSSVue must be installed, or other
     HEC product providing the appropriate .jar files and shared libraries.
-SystemRequirements: HEC-DSSVue (>= 2.0.1)
+SystemRequirements: HEC-DSSVue (>= 3.0)
 Depends:
-    rJava,
+    rJava (>=0.9-12),
     xts,
     zoo,
     stringr,
-    data.table,
-    plyr
+    plyr,
+    rjson
 Suggests:
-    hydroutils
+    hydroutils, data.table
 License: MIT
 BugReports: heisman+dssripbugs@gmail.com
 RoxygenNote: 7.1.0

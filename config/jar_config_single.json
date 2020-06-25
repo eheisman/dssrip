@@ -1,0 +1,12 @@
+[
+    {
+      "name": "dssvue3-win64",
+      "state": "tested",
+      "notes": "this is the best supported configuration",
+      "platform": "x86_64-w64-mingw32",
+      "dss_location": "C:\\Programs\\HEC-DSSVue-v3.0.00.212",
+      "jars": ["jar\\hec.jar", "jar\\rma.jar", "jar\\lookup.jar", "jar\\hec-dssvue-v3.0.jar"],
+      "libs": ["lib\\javaheclib.dll"],
+      "JAVA_HOME": "\\java"
+    }
+]
