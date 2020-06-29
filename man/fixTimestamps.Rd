@@ -13,7 +13,10 @@ fixTimestamps(ts, n = -24 * 60 * 60)
 xts with timestamps adjusted back by n
 }
 \description{
-Used to convert 24:00 timestamps back to proper date.
+Used to convert daily data's 24:00 timestamps back to proper date.
+}
+\details{
+This should be fixed by passing "offsetByInterval" to the `tsc.to.xts` function as that is more robust to timesteps other than daily.
 }
 \note{
 - this should be automated in future version by checking if the TSC's type allows 24:00 timestamps

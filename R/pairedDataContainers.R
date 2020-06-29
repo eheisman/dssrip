@@ -27,3 +27,10 @@ getColumnsByName <- function(file, pdc, column){
     return(pdc$yOrdinates[which(pdc$labels == column),])
   }
 }
+
+#TODO implement this
+#' columnsToDataFrame
+#'
+columnsToDataFrame <- function(file, pdc, colnameFunction=NULL){
+  
+}

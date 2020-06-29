@@ -1,4 +1,8 @@
+######
 # constants.R
+# Constants used by dssrip to fill in metadata
+#
+######
 
 TSC_TYPES = c("INST-VAL", "INST-CUM", "PER-AVER", "PER-CUM")
 minutes = c(1,2,3,4,5,6,10,12,15,20,30)

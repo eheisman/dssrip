@@ -12,7 +12,7 @@ Description: A wrapper for the HEC-DSSVue program's 'Jython' API, allowing an
     HEC product providing the appropriate .jar files and shared libraries.
 SystemRequirements: HEC-DSSVue (>= 3.0)
 Depends:
-    rJava (>=0.9-12),
+    rJava (>= 0.9-12),
     xts,
     zoo,
     stringr,

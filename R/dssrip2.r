@@ -1,25 +1,23 @@
-#' @title DSS-Rip Initalization Options
+#' @title dssrip initialization
 #' @author Evan Heisman
 #' @description
-#' Starts a rJava JVM with configuration for DSS-Vue's jar and dll files.
+#' Starts a rJava JVM with configuration for dss's jar and dll files.
 #' 
 #' @details
-#' as.package is an experimental parameter for calling this as part of the onLoad function as part
-#'   of the DSS-Rip package.  This is the prefered method for an R package, but not yet functional
-#'   for this.  The best practice is to load the DSS-Rip package, and call initialize.dssrip with
-#'   as.package=FALSE, the default value.  Either the 'nativeLibrary' parameter for .jpackage, or
-#'   as a dyn.load, would be the place to load javaHeclib.dll, but rather than distribute it with 
-#'   this R package, the user should obtain it from an install of HEC-DSSVue.  Further reasons to 
-#'   use .jinit include being able to initialize the JVM in the same manner as HEC-DSSVue would, 
-#'   adding the appropriate jars and DLLs as start up options.
-#' TODO Implement so that dssrip can be loaded after other rJava based packages
-#' TODO Quiet DSS status messages
+#' This method is typically called by the onLoad function when the package is imported.
+#' List of `options` can be passed to this package via the R global `options()` function:
+#' - `dss_jvm_parameters` string passed to JVM when initialized, allowing memory settings to be altered or other JVM start-up options set.  This is untested.
+#' - `dss_override_location` file path to force dssrip to load a particular set of dss libraries.  This is untested. 
+#' - `dss_config_filename` filename that points to a jar_config.json file external to the package's default configuration.
+#' - `dss_allowed_states` list, defaults to `c('tested')`, filters config file to only allowed states.
+#' - `dss_default_config`, string, forces to only use config going by this `name`.
 #' @param quietDSS - if true, don't show 'Z' messages during opening, reading, and writing to a file.
-#' @param parameters list of options string to pass to JVM.
-#' @param setJavaLoc - override Java location with one in config
+#' @param parameters list of options string to pass to JVM. (defaults to the option `dss_jvm_parameters` or NULL)
+#' @param setJavaLoc - override Java location with one in config file. (untested)
 #' @param verbose - set to true for debuggering
+#' @seealso loadConfig
 #' @return JVM initialization status - 0 if successful, positive for partial initialization, negative for failure.  See ?.jinit 
-initialize.dssrip2 = function(pkgname=NULL, quietDSS=T, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=FALSE, ...){
+initialize.dssrip = function(pkgname=NULL, quietDSS=T, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=FALSE, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
 
   require(rJava)
@@ -50,14 +48,17 @@ initialize.dssrip2 = function(pkgname=NULL, quietDSS=T, parameters=options()[["d
   # initialize JVM/rJava
   .jpackage(pkgname, lib.loc) #, jars=jars) #, java.parameters=libpath)
   #.jcall("java/lang/System", returnSig='V', method="load", lib)
-  # is this necessary?
-  javaImport(packages = "java.lang")
+  # is this necessary? appears so
+  javaImport(packages = "java.lang") 
+  # is this necessary? appears so
   propertyString = .jnew("java/lang/String","java.library.path")
   libString = .jnew("java/lang/String", libs[1])
   .jcall("java/lang/System", returnSig='S', method="setProperty", propertyString, libString);
-  .jaddLibrary("javaHeclib", paste0(libs[0], path.sep, "javaHeclib.", "libExt"))
+  # proper way to do these from rJava 0.9-12
+  javaHeclibPath =  paste0(libs[1], path.sep, "javaHeclib.", lib.ext)
+  .jaddLibrary("javaHeclib", javaHeclibPath)
   .jaddClassPath(jars)
-  }
+  
   if(quietDSS){
     ## None of the below work
     ## TODO:  Try this with a temporary file instead of NULL
@@ -74,33 +75,39 @@ initialize.dssrip2 = function(pkgname=NULL, quietDSS=T, parameters=options()[["d
 }
 
 
-#' @title DSS-Rip Initalization Options
+#' @title dssrip read dss configuration file
 #' @author Evan Heisman
 #' @description
-#' Starts a rJava JVM with configuration for DSS-Vue's jar and dll files.
+#' Reads dss configuration file from .json internal to package or externally selected by user.  Useful for managing multiple dss versions for linking to dssrip.
 #' 
 #' @details
-#' as.package is an experimental parameter for calling this as part of the onLoad function as part
-#'   of the DSS-Rip package.  This is the prefered method for an R package, but not yet functional
-#'   for this.  The best practice is to load the DSS-Rip package, and call initialize.dssrip with
-#'   as.package=FALSE, the default value.  Either the 'nativeLibrary' parameter for .jpackage, or
-#'   as a dyn.load, would be the place to load javaHeclib.dll, but rather than distribute it with 
-#'   this R package, the user should obtain it from an install of HEC-DSSVue.  Further reasons to 
-#'   use .jinit include being able to initialize the JVM in the same manner as HEC-DSSVue would, 
-#'   adding the appropriate jars and DLLs as start up options.
-#' TODO Implement so that dssrip can be loaded after other rJava based packages
-#' TODO Quiet DSS status messages
-#' @param configFileName filename of configurations to load, defaults to the one in this package.
-#' @param defaultConfig name of default configuration to use; "none" will allow config file to specify a prefered config.
-#' @param allowedStates only use configurations matching this state; defaults to "tested"
-#' @param override_dss_location if set, forces using a particular location for dss jar files.
-dssConfig = function(configFileName="./config/jar_config.json", 
-                     defaultConfig="none",
-                     allowedStates=c("tested"), 
-                     override_dss_location=options()[["override_dss_location"]]){
+#' Reads the jar_config.json file to find DSS libraries for use by dssrip.
+#' @param configFileName defaults to package jar_config.json, otherwise can point to set of libraries from `options()`'s `dss_config_filename`
+#' @param defaultConfig name of configuration to use if you know _exactly_ which one you want, defaults to option `dss_default_config`
+#' @param allowedStates only allow loading of configs in these states, defaults to `tested` or `dss_allowed_states` option
+#' @param dssOverrideLocation only allow dss libraries from this directory, will try all the configs at this location. can be set by option `dss_override_location`
+#' @export
+dssConfig = function(configFileName=options()[["dss_config_filename"]], 
+                     defaultConfig=options()[["dss_default_config"]],
+                     allowedStates=options()[["dss_allowed_states"]], 
+                     dssOverrideLocation=options()[["dss_override_location"]]){
   # libraries needed
   require(rjson)
   require(stringr)
+  
+  # populate default values
+  # dss_override_location handled later
+  if(is.null(configFileName)){
+    configFileName = "./config/jar_config.json"
+  }
+  
+  if(is.null(defaultConfig)){
+    defaultConfig = "none"
+  }
+  
+  if(is.null(allowedStates)){
+    allowedStates =   c("tested")
+  }
   
   platform=R.Version()$platform
   # read jar config file and match first platform and allowed states with files that exist
@@ -114,10 +121,10 @@ dssConfig = function(configFileName="./config/jar_config.json",
     foundConfig = FALSE
     
     # check files exist in dss_location
-    if(is.null(override_dss_location)){
+    if(is.null(dssOverrideLocation)){
       dss_location = config$dss_location
     } else {
-      dss_location = override_dss_location
+      dss_location = dssOverrideLocation
     }
     # add path.sep if needed
     if(str_sub(dss_location, -1) != config$path.sep){
@@ -127,10 +134,19 @@ dssConfig = function(configFileName="./config/jar_config.json",
     libList = paste0(dss_location, config$libs)
     javaLocation = paste0(dss_location, config$JAVA_HOME)
 
+    # check if this config is can be used
     matchPlatform = config$platform == platform # use only if this is true
     foundJars = (all(file.exists(jarList)) & all(file.exists(libList))) # check if these exists
     isDefaultConfig = config$name == defaultConfig # use this if true
     isAllowedState = config$state %in% allowedStates # only use if allowed state
+
+    # debug block
+    # checks = c(matchPlatform=matchPlatform, foundJars=foundJars, isDefaultConfig=isDefaultConfig, isAllowedState=isAllowedState)
+    # system = c(matchPlatform=platform, foundJars="", isDefaultConfig=defaultConfig, isAllowedState="")
+    # setting = c(matchPlatform=config$platform, foundJars="", isDefaultConfig=config$name, isAllowedState=config$state)
+    # checksdf = data.frame(SYSTEM=system, SETTING=setting, CHECKS=checks)
+    # print(checksdf)
+    
     if(matchPlatform & (foundJars | isDefaultConfig) & isAllowedState){
       foundConfig = TRUE
       break

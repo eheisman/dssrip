@@ -4,16 +4,27 @@
 #' 
 #' Long Description
 #' 
+#' @param colnamesSource which TimeSeriesContainer field should be used for column names, typically `parameter`
+#' @param offsetForType defaults to `FALSE` for backwards compatibility, offsets data if period average
+#' 
 #' @return xts object from times and values in TSC.
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-tsc.to.xts <- function(tsc, colnamesSource="parameter"){
+tsc.to.xts <- function(tsc, colnamesSource="parameter", offsetForType=FALSE){
   
   metadata = getMetadata(tsc, colnamesSource=colnamesSource)
   
+  # compute offset to account for data type and maybe timezone, etc.
+  offset = 0
+  # data type - inst vals = 0; period vals += interval
+  if(offsetForType){
+    offset = int(metdata[["interval"]])
+  }
+
+  
   ## TODO: fix tz="UTC" to use local if not specified in tsc's timezone parameter
-  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60, origin="1899-12-31 00:00", tz="UTC")) #, dssMetadata= as.data.frame(metadata))
+  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60+offset, origin="1899-12-31 00:00", tz="UTC")) #, dssMetadata= as.data.frame(metadata))
   colnames(out) = metadata[[colnamesSource]]
   
   return(out)
@@ -25,7 +36,7 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter"){
 #' 
 #' Long Description
 #' 
-#' @return data.table object from times andvalues in TSC.
+#' @return data.table object from times and values in TSC.
 #' @note NOTE
 #' @author Cameron Bracken
 #' @export 
@@ -97,7 +108,7 @@ getFullTSC <- function(file, paths, ...){
       stop("Cannot create condensed pathname to pull!")
     }
   }
-  return(getTSC(file, paths[1], fullTSC=TRUE))  
+  return(getTSC(file, paths[1], fullTSC=TRUE, ...))  
 }
 
 #' getFullTSC Get a full TSC, ignoring date parameters.
@@ -148,7 +159,9 @@ getFullDT <- function(file, paths, discard_empty = TRUE){
 # Adjusts "24:00" timestamps back one day so indexing appears appropriately.
 #' Adjusts timestamps back by one day.  
 #' 
-#' Used to convert 24:00 timestamps back to proper date.
+#' Used to convert daily data's 24:00 timestamps back to proper date.
+#' 
+#' This should be fixed by passing "offsetByInterval" to the `tsc.to.xts` function as that is more robust to timesteps other than daily.
 #' 
 #' @note - this should be automated in future version by checking if the TSC's type allows 24:00 timestamps
 #' 

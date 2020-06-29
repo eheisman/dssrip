@@ -4,7 +4,12 @@
 \alias{tsc.to.xts}
 \title{tsc.to.xts Converts Java TimeSeriesContainer objects into XTS time series objects.}
 \usage{
-tsc.to.xts(tsc, colnamesSource = "parameter")
+tsc.to.xts(tsc, colnamesSource = "parameter", offsetForType = FALSE)
+}
+\arguments{
+\item{colnamesSource}{which TimeSeriesContainer field should be used for column names, typically `parameter`}
+
+\item{offsetForType}{defaults to `FALSE` for backwards compatibility, offsets data if period average}
 }
 \value{
 xts object from times and values in TSC.

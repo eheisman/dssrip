@@ -2,48 +2,43 @@
 % Please edit documentation in R/dssrip2.r
 \name{initialize.dssrip}
 \alias{initialize.dssrip}
-\title{DSS-Rip Initalization Options}
+\title{dssrip initialization}
 \usage{
 initialize.dssrip(
   pkgname = NULL,
-  lib.loc,
-  dss_location = getOption("dss_location"),
-  dss_jre = getOption("dss_jre_location"),
-  platform = NULL,
   quietDSS = T,
-  verboseLib = F,
-  parameters = NULL,
+  parameters = options()[["dss_jvm_parameters"]],
+  setJavaLoc = FALSE,
+  verbose = FALSE,
   ...
 )
 }
 \arguments{
-\item{dss_location}{Specify location of DSSVue libraries if not in default location.}
+\item{quietDSS}{- if true, don't show 'Z' messages during opening, reading, and writing to a file.}
 
-\item{platform}{Specify platform, used in determining default DSS location.}
+\item{parameters}{list of options string to pass to JVM. (defaults to the option `dss_jvm_parameters` or NULL)}
 
-\item{quietDSS}{- don't show 'Z' messages during opening, reading, and writing to a file.  Experimental.}
+\item{setJavaLoc}{- override Java location with one in config file. (untested)}
 
-\item{parameters}{Options string to pass to JVM.}
-
-\item{as.package}{If true, uses .jpackage instead of .jinit for better encapsulation of module. (Buggy!)}
+\item{verbose}{- set to true for debuggering}
 }
 \value{
 JVM initialization status - 0 if successful, positive for partial initialization, negative for failure.  See ?.jinit
 }
 \description{
-Starts a rJava JVM with configuration for DSS-Vue's jar and dll files.
+Starts a rJava JVM with configuration for dss's jar and dll files.
 }
 \details{
-as.package is an experimental parameter for calling this as part of the onLoad function as part
-  of the DSS-Rip package.  This is the prefered method for an R package, but not yet functional
-  for this.  The best practice is to load the DSS-Rip package, and call initialize.dssrip with
-  as.package=FALSE, the default value.  Either the 'nativeLibrary' parameter for .jpackage, or
-  as a dyn.load, would be the place to load javaHeclib.dll, but rather than distribute it with 
-  this R package, the user should obtain it from an install of HEC-DSSVue.  Further reasons to 
-  use .jinit include being able to initialize the JVM in the same manner as HEC-DSSVue would, 
-  adding the appropriate jars and DLLs as start up options.
-TODO Implement so that dssrip can be loaded after other rJava based packages
-TODO Quiet DSS status messages
+This method is typically called by the onLoad function when the package is imported.
+List of `options` can be passed to this package via the R global `options()` function:
+- `dss_jvm_parameters` string passed to JVM when initialized, allowing memory settings to be altered or other JVM start-up options set.  This is untested.
+- `dss_override_location` file path to force dssrip to load a particular set of dss libraries.  This is untested. 
+- `dss_config_filename` filename that points to a jar_config.json file external to the package's default configuration.
+- `dss_allowed_states` list, defaults to `c('tested')`, filters config file to only allowed states.
+- `dss_default_config`, string, forces to only use config going by this `name`.
+}
+\seealso{
+loadConfig
 }
 \author{
 Evan Heisman

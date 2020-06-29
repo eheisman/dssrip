@@ -7,7 +7,7 @@
 tsc.to.dt(tsc, ...)
 }
 \value{
-data.table object from times andvalues in TSC.
+data.table object from times and values in TSC.
 }
 \description{
 convert time series container to data.table
