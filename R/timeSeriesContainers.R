@@ -1,3 +1,8 @@
+#########
+# timeSeriesContainers.R
+# Functions to parse timeseries containers into objects that R recognizes
+#########
+
 #' tsc.to.xts Converts Java TimeSeriesContainer objects into XTS time series objects.
 #' 
 #' convert time series container to XTS
@@ -19,7 +24,10 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter", offsetForType=FALSE){
   offset = 0
   # data type - inst vals = 0; period vals += interval
   if(offsetForType){
-    offset = int(metdata[["interval"]])
+    if(str_starts(metadata[["type"]], fixed("PER-", ignore_case=TRUE))){
+      # period average or period cumulative data, offset by interval
+      offset = int(metdata[["interval"]])
+    }
   }
 
   

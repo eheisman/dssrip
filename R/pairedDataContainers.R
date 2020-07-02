@@ -1,4 +1,8 @@
-## PairedDataContainer functions
+#########
+# pairedDataContainers.R
+# functions to turn PairedDataContainer objects into data.frames
+#########
+
 
 #' getColumnsByName Get a column from a PairedDataContainer object.
 #' 

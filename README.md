@@ -19,11 +19,10 @@ devtools::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch", ref
 ```
 For older versions of R (at least 3.4 and older):
 ```
-devtools::install_github("eheisman/dssrip", args="--no-multiarch")
+devtools::install_github("eheisman/dssrip", args="--no-multiarch", ref="tidyup")
 ```
 
 The ```'--no-multiarch'``` parameter is required on a 64-bit computer to force it to install only the current architecture.  If you do not have the options set to point to a version of the javaHeclib.dll file with the same architecture as the version of R that you are running, the install will fail.  If you need to use both 64-bit and 32-bit R, you will have to install it once for each version.
-
 
 # Usage:
 
@@ -46,22 +45,16 @@ Several convenience functions for reading timeseries and paried data containers 
 ## For DSS installed elsewhere than Program files
 Set the following in your .Rprofile, or run before you install and/or load dssrip:
 ```
-options(dss_location="C:\\programs\\HEC\\HEC-DSSVue2.1")
-options(dss_jre_location="C:\\programs\\HEC\\HEC-DSSVue2.1\\jre")
+  options(dss_override_location="c:\\programs\\HEC-DSSVue-v3.0.00.212\\")
 ```
 
-## Missing ```JAVA_HOME``` settings and using a non-standard version of DSSVue:
-If you're trying to run DSSRip in 64-bit R, it will not work without a 64-bit javaHeclib.dll.  Many recent HEC Java-based programs can provide this, although ```dssrip``` was mostly tested using the 32-bit library that came with DSSVue 2.0.  Newer versions may cause incompatibilities with the ```dssrip``` glue code.
+Other `options` that can be used to help the package load correctly by pointing to the correct DSS .jar and library files:
 
-Otherwise, if you only have 64-bit Java on your system, you can set DSS-Rip to call the JRE bundled with HEC-DSSVue.
-
-Set the following in your .Rprofile, or run before you install and/or load dssrip:
-
-```
-options(dss_jre_location="C:\\Program Files (x86)\\HEC\\HEC-DSSVue\\java")
-Sys.setenv(JAVA_HOME="C:\\Program Files (x86)\\HEC\\HEC-DSSVue\\java")
-```
-This fix may cause issues with other rJava based packages, so do this at your own risk.
+- `dss_jvm_parameters` string passed to JVM when initialized, allowing memory settings to be altered or other JVM start-up options set.  This is untested.
+- `dss_override_location` file path to force dssrip to load a particular set of dss libraries.  It will look for all configurations using only this location.
+- `dss_config_filename` filename that points to a jar_config.json file external to the package's default configuration.
+- `dss_allowed_states` list, defaults to `c('tested')`, filters config file to only allowed states.
+- `dss_default_config`, string, forces to only use config going by this `name`.
 
 
 # TODO List:

@@ -64,3 +64,4 @@ R/dssrip
 # DSS catalogs
 *.dsc
 .Rproj.user
+.Rproj

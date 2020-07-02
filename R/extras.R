@@ -4,8 +4,9 @@
 #
 ######
 
-## Convenience function for viewing a DSS file.  DOES NOT WORK!
+## Convenience function for viewing a DSS file.  Does not work without "javax/help jar"
 newDSSVueWindow <- function(file=NULL){
+  #javaImport("javax.help")
   mw = .jcall("hec/dssgui/ListSelection",
               returnSig="Lhec/dssgui/ListSelection;",
               method="createMainWindow")

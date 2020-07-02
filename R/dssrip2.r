@@ -1,3 +1,8 @@
+#######
+# dssrip2.r
+# functions for connecting to the DSS libraries through Java
+#######
+
 #' @title dssrip initialization
 #' @author Evan Heisman
 #' @description

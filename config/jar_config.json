@@ -7,7 +7,7 @@
       "platform": "x86_64-w64-mingw32",
       "path.sep": "\\",
       "dss_location": "C:\\Programs\\HEC-DSSVue-v3.0.00.212",
-      "jars": ["jar\\hec.jar", "jar\\rma.jar", "jar\\lookup.jar", "jar\\hec-dssvue-v3.0.jar"],
+      "jars": ["jar\\hec.jar", "jar\\rma.jar", "jar\\lookup.jar", "jar\\hec-dssvue-v3.0.jar", "jar\\help\\dssvueHelp.jar"],
       "libs": ["lib"],
       "lib.ext": "dll",
       "JAVA_HOME": "java"
