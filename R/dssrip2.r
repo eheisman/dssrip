@@ -22,10 +22,9 @@
 #' @param verbose - set to true for debuggering
 #' @seealso loadConfig
 #' @return JVM initialization status - 0 if successful, positive for partial initialization, negative for failure.  See ?.jinit 
-initialize.dssrip = function(pkgname=NULL, quietDSS=T, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=FALSE, ...){
+initialize.dssrip = function(pkgname=NULL, quietDSS=TRUE, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=TRUE, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
 
-  require(rJava)
   require(stringr)
   require(xts)
     
@@ -41,38 +40,38 @@ initialize.dssrip = function(pkgname=NULL, quietDSS=T, parameters=options()[["ds
   #library.ext = config$library.ext
   
   ## Set JRE location
-  if(setJavaLoc){
-    Sys.setenv(JAVA_HOME=java)
-  }
+  # Still want to do this in .Rprofile... ugh.
+  #if(setJavaLoc){
+    #Sys.setenv(JAVA_HOME=java)
+    #print(paste("JAVA_HOME is ", Sys.getenv("JAVA_HOME")))
+  #}
   if(verbose) packageStartupMessage(sprintf("JRE location is %s\n", Sys.getenv("JAVA_HOME")))
-
   
+  # don't do this until after setting JAVA_HOME
+  require(rJava)
+
   # is this necessary?
   #Sys.setenv(PATH=paste0(Sys.getenv("PATH"), ";", dss_location, ";", libdir))
   
   # initialize JVM/rJava
-  .jpackage(pkgname, lib.loc) #, jars=jars) #, java.parameters=libpath)
-  #.jcall("java/lang/System", returnSig='V', method="load", lib)
+  # Don't use the jars and nativeLibrary path as the DSS libraries are external to this package
+  .jpackage(pkgname, lib.loC) #, jars=jars) #, java.parameters=libpath)
+
   # is this necessary? appears so
   javaImport(packages = "java.lang") 
+  
   # is this necessary? appears so
   propertyString = .jnew("java/lang/String","java.library.path")
   libString = .jnew("java/lang/String", libs[1])
   .jcall("java/lang/System", returnSig='S', method="setProperty", propertyString, libString);
+  
   # proper way to do these from rJava 0.9-12
   javaHeclibPath =  paste0(libs[1], path.sep, "javaHeclib.", lib.ext)
   .jaddLibrary("javaHeclib", javaHeclibPath)
   .jaddClassPath(jars)
   
   if(quietDSS){
-    ## None of the below work
-    ## TODO:  Try this with a temporary file instead of NULL
-    #opt 1
-    #.jcall("java/lang/System", returnSig='V', method="setOut", .jnull())
-    #opt 2
-    #nullPrintStream = .jnew("java/lang/System/PrintStream", paste0(dss_location, path.sep, "dssrip_temp.txt"))
-    #.jcall("java/lang/System", returnSig='V', method="setOut", nullPrintStream)
-    #opt 3: See heclib programmers manual for this trick.
+    # See heclib programmers manual for this trick.
     messageLevel = 2 # only print errors
     #try(, silent=TRUE)
     .jcall("hec/heclib/util/Heclib", returnSig='V', method="zset", 'MLEVEL', ' ', as.integer(messageLevel))
