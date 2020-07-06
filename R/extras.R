@@ -17,3 +17,12 @@ newDSSVueWindow <- function(file=NULL){
   }
   return(mw)
 }
+
+# used for writing timeseries data back to the dss file
+#SETUP FUNCTION TO CREATE HEC TIMESERIES CONTAINER
+hecTimeInt = Vectorize(function(y, m, d, hours, minutes){
+  # this isn't fast, but should be reliable.
+  ht = .jnew("hec/heclib/util/HecTime")
+  ht$set(sprintf("%02d%03s%04d %02d%02d",as.integer(d),month.abb[m],as.integer(y),hours,minutes))
+  return(ht$value())
+})
