@@ -14,7 +14,7 @@ If you haven't already, install the `rJava`, `plyr`, `reshape2`, `stringr`, and 
 You can download a copy of DSSVue or a number of other HEC programs that run on Java (most of them except for HEC-RAS) to get the required .jar and .dll files to make `dssrip` work.  I highly recommend you use the [copy here for 64-bit use](https://www.hec.usace.army.mil/software/hec-dssvue/downloads/dev/HEC-DSSVue-v3.0.00.212.7z).  `dssrip` is now packaged with a file called `jar_config.json` that helps find the appropriate libraries depending on the HEC program used to supply the .jar files.  If you're using another program, you can make a copy of this file, add a configuration for that program, and set the option `dss_config_filename` in your `.Rprofile` file to ensure `dssrip` finds the correct settings.
 
 ## `.Rprofile` settings required
-Two settings need to be applied in your `.Rprofile` file to install and load `dssrip` correctly.  Without setting these, it falls back to the settings in the default `jar_config.json` file which may not work for your machine. 
+Two settings need to be applied in your `.Rprofile` file to install and load `dssrip` correctly.  Without setting these, it falls back to the settings in the default `jar_config.json` file which may not work for your machine.  The install process for R packages happens in a clean environment, so setting them in your script prior to running install may not set them in that environment.
 
 Setting the R option `dss_override_location` to the directory containing the `HEC-DSSVue.exe` file from the previously mentioned copy is the quickest way to get `dssrip` up and running.  
 
