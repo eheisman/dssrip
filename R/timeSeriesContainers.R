@@ -38,34 +38,6 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter", offsetForType=FALSE){
   return(out)
 }
 
-#' tsc.to.dt Converts Java TimeSeriesContainer objects to data.table objects.
-#' 
-#' convert time series container to data.table
-#' 
-#' Long Description
-#' 
-#' @return data.table object from times and values in TSC.
-#' @note NOTE
-#' @author Cameron Bracken
-#' @export 
-tsc.to.dt <- function(tsc, ...){
-  
-  require(data.table)
-  
-  times = as.POSIXct(tsc$times*60, origin="1899-12-31 00:00", tz="UTC")
-  values = tsc$values
-  units = tsc$units
-  if(length(values)==0)units = character(0)
-  
-  out = data.table(datetime=times,value=values,units=units)
-  setkey(out, "datetime")
-  
-  attr(out,'dssMetadata') = as.data.frame(getMetadata(tsc))
-  
-  return(out)
-}
-
-
 #' getTSC Get a TSC from a file and pathname as a XTS.
 #' 
 #' Skips intermediate step of getting TimeSeriesContainer object.
@@ -79,20 +51,6 @@ tsc.to.dt <- function(tsc, ...){
 #' @family getTSC
 getTSC <- function(file, path, fullTSC=FALSE, ...){
   return(tsc.to.xts(file$get(path, fullTSC), ...))
-}
-
-#' getDT Get a TSC from a file and pathname as a data.table
-#' 
-#' short desc
-#' 
-#' Long Description
-#' 
-#' @return stuff
-#' @note NOTE
-#' @author Cameron Bracken
-#' @export 
-getDT <- function(file, path){
-  return(tsc.to.dt(file$get(path)))
 }
 
 #' getFullTSC Get a full TSC, ignoring date parameters.
@@ -117,51 +75,6 @@ getFullTSC <- function(file, paths, ...){
     }
   }
   return(getTSC(file, paths[1], fullTSC=TRUE, ...))  
-}
-
-#' getFullTSC Get a full TSC, ignoring date parameters.
-#' 
-#' Gets paths, converts to XTS, and merges to one time series.
-#' 
-#' Warning - does not check that all paths are the same except for D part
-#' 
-#' @return merged xts of all times and values in time series matching paths.
-#' @note NOTE
-#' @author Evan Heisman
-#' @export 
-#' @family getTSC
-getLooseTSC <- function(file, paths, ...){
-  tscList = list()
-  for(p in paths){
-    tscList[[p]] = getTSC(file, p, ...)
-  }
-  xtsOut = do.call(rbind.xts, tscList)
-  xtsAttributes(xtsOut) = list(dssMetadata=do.call(rbind, lapply(tscList, function(x) attr(x, "dssMetadata"))))
-  return(xtsOut)
-}
-
-#' getFullDT Get a full TSC as data.table, ignoring date parameters.
-#' 
-#' Gets paths, converts to data.table, and merges to one time series.
-#' 
-#' Long Description
-#' 
-#' @return merged data.tame of all times and values in the time series matching paths.
-#' @note NOTE
-#' @author Cameron Bracken
-#' @export 
-getFullDT <- function(file, paths, discard_empty = TRUE){
-  require(data.table)
-  
-  dtList = list()
-  for(p in paths){
-    dt = getDT(file, p)
-    if(nrow(dt) == 0 & isTRUE(discard_empty)) next else dtList[[p]] = dt
-  }
-  dtOut = do.call(rbind, dtList)
-  attr(dtOut,'dssMetadata') = do.call(rbind, lapply(dtList, function(x) attr(x, "dssMetadata")))
-  
-  return(dtOut)
 }
 
 # Adjusts "24:00" timestamps back one day so indexing appears appropriately.

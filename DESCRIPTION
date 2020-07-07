@@ -19,7 +19,7 @@ Depends:
     plyr,
     rjson
 Suggests:
-    hydroutils, data.table
+    hydroutils
 License: MIT
 BugReports: heisman+dssripbugs@gmail.com
 RoxygenNote: 7.1.0

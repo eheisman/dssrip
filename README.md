@@ -69,15 +69,12 @@ Several convenience functions for reading timeseries and paried data containers 
 
 `getFullTSC` - returns an `xts` object with the requested data.
 
-`getFullDT` - similar to getFullTSC, but returns a `data.table`.
-
 `getColumnsByName` - read a column from a PairedDataContainer.
 
 
 # Known Issues:
 - dssrip must be loaded before any other packages that require ```rJava``` so that dssrip can initialize a JVM with the correct options.  This isn't 'nice' behavior, but at the moment it is required.  This issue can be mostly resolved by loading dssrip before other packages that depend on ```rJava```, such as XLConnect. 
 - Time series import does not handle timezones well, xts objects often default to assuming the file is in GMT.  This may be a larger issue with how R handles timezones on Windows.
-- data.table and rJava both imported and have a naming conflict on the ```J()``` function.  At the moment the rJava version masks the data.table version, the reverse may be more useful.
 
 # Hydroutils
 The plotting and misc hydrology functions of this package has been moved to their own package, [hydroutils](http://github.com/eheisman/hydroutils).

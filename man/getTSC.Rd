@@ -20,8 +20,7 @@ NOTE
 }
 \seealso{
 Other getTSC: 
-\code{\link{getFullTSC}()},
-\code{\link{getLooseTSC}()}
+\code{\link{getFullTSC}()}
 }
 \author{
 Evan Heisman

@@ -20,7 +20,6 @@ NOTE
 }
 \seealso{
 Other getTSC: 
-\code{\link{getLooseTSC}()},
 \code{\link{getTSC}()}
 }
 \author{

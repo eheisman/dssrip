@@ -6,10 +6,10 @@
 \usage{
 initialize.dssrip(
   pkgname = NULL,
-  quietDSS = T,
+  quietDSS = TRUE,
   parameters = options()[["dss_jvm_parameters"]],
   setJavaLoc = FALSE,
-  verbose = FALSE,
+  verbose = TRUE,
   ...
 )
 }
