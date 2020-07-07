@@ -41,8 +41,4 @@ opendss <- function(filename, warnIfNew=TRUE, stopIfNew=FALSE){
 #' @export
 squeeze<-function(file){
   file$getDataManager()$squeeze()
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3ff4510602a389dd18b4de45cd63d3a601ff16c2
