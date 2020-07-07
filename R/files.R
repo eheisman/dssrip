@@ -30,3 +30,15 @@ opendss <- function(filename, warnIfNew=TRUE, stopIfNew=FALSE){
   dssFile = .jcall("hec/heclib/dss/HecDss", "Lhec/heclib/dss/HecDss;", method="open", filename)
   return(dssFile)
 }
+
+#' @title Squeeze a DSS file
+#' 
+#' @description 
+#' Calls squeeze method on file to remove deleted or overwritten data
+#' 
+#' @param file dss file object from `opendss`
+#' 
+#' @export
+squeeze<-function(file){
+  file$getDataManager()$squeeze()
+}
