@@ -69,7 +69,7 @@ Several convenience functions for reading timeseries and paried data containers 
 
 `getFullTSC` - returns an `xts` object with the requested data.
 
-`getFullDT` - similar to getFullTSC, but returns a data.table.
+`getFullDT` - similar to getFullTSC, but returns a `data.table`.
 
 `getColumnsByName` - read a column from a PairedDataContainer.
 

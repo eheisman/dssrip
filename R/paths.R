@@ -26,6 +26,10 @@
 #' 
 #' \code{pathByParts} functions use the format "\code{A=PATTERN B=PATTERN}" for their search string.  Parts not specified will be searched for as a wildcard
 #' 
+#' \code{getCatalogedPathnames} and \code{getCondensedCatalog} calls `getCatalogedPathnames` and `getCondensedCatalog` functions in Java API and converts result to R character vector.
+#' 
+#' \code{getAllPaths} tries to read the DSS catalog file (does not work in R 4.0) instead of calling Java API and should be deprecated.
+#' 
 #' See Page 8-32 of the HEC-DSSVue manual for further examples on the wildcard methods.  The "at" character cannot be used as a wildcard.  
 #' 
 #' Custom search functions can be written to take the first two parameters as the full list of paths as a character vector, and a search pattern string.  
@@ -63,6 +67,22 @@ getAllPaths <- function(file, rebuild=FALSE){
   paths = dsc[11:length(dsc)]
   paths = str_sub(paths,19,str_length(paths))  
   return(paths)
+}
+
+#' @export
+getCatalogedPathnames <- function(file, forceRebuild=FALSE){
+  # assume rebuild is false, let DSS api decide to update
+  .javaVectorToStrings(file$getCatalogedPathnames(forceRebuild))
+}
+
+#' @export
+getCondensedCatalog <- function(file){
+  .javaVectorToStrings(file$getCondensedCatalog())
+}
+
+.javaVectorToStrings <- function(vect){
+  vectList = .jevalArray(vect$toArray())
+  sapply(vectList, .jcall, returnSig="S", "toString")
 }
 
 #' @export 
