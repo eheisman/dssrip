@@ -3,6 +3,8 @@
 \name{dss_path_functions}
 \alias{dss_path_functions}
 \alias{getAllPaths}
+\alias{getCatalogedPathnames}
+\alias{getCondensedCatalog}
 \alias{getPaths}
 \alias{fullPathByWildcard}
 \alias{fullPathByRegex}
@@ -10,11 +12,13 @@
 \alias{pathByPartsRegex}
 \alias{splitPattern}
 \alias{separatePathParts}
+\alias{pathsToDataFrame}
 \title{Functions for searching pathnames in a DSS file}
 \usage{
+\code{getCatalogedPathnames(file)}
 \code{getPaths(file, searchString)}
 \code{getPaths(file, searchString, searchFunction, ...)}
-\code{getAllPaths(file, rebuild=FALSE)}
+\code{getAllPaths(file, rebuild=TRUE)}
 \code{splitPattern(pattern)}
 \code{separatePathParts(paths)}
 }
@@ -28,7 +32,7 @@
 \item{useRegex}{boolean to determine if regex or wildcards should be used.}
 }
 \value{
-list of pathnames for use with \code{\link{getFullTSC}}/\code{\link{getFullDT}} functions.
+list or data.frame of pathnames
 }
 \description{
 Functions to search for path names in DSS files.
@@ -50,6 +54,12 @@ Custom search functions can be written to take the first two parameters as the f
 The search pattern string can be provided as an empty string with other parameters provided for the search. \code{splitPattern} will split a path by parts pattern into search terms, and \code{separatePathParts} will split a full path pattern into search terms.
 }
 \examples{
+
+# recommended search technique:
+paths = pathsToDataFrame(getCatalogedPathnames(dssfile), simplify=T)
+bwCreekStagePaths = subset(paths, LOCATION="BRANDYWINE CREEK", PARAMETER="STAGE")$PATH
+
+# these can be a little flaky.
 getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=USGS")
 getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=USGS", pathByPartsWildcard)
 getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=US.*", pathByPartsRegex)
@@ -60,5 +70,5 @@ getAllPaths(dssfile)
 getAllPaths(dssfile, rebuild=TRUE)
 }
 \author{
-Evan Heisman
+Evan
 }

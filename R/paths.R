@@ -1,24 +1,25 @@
-#######
+####Heisman###
 # paths.R
 # Functions for finding records in a DSS file 
 #######
 
 #' @title Functions for searching pathnames in a DSS file
 #' @name dss_path_functions
-#' @author Evan Heisman
-#' @aliases getAllPaths getPaths fullPathByWildcard fullPathByRegex pathByPartsWildcard pathByPartsRegex splitPattern separatePathParts
+#' @author Evan 
+#' @aliases getCatalogedPathnames getCondensedCatalog getAllPaths getPaths fullPathByWildcard fullPathByRegex pathByPartsWildcard pathByPartsRegex splitPattern separatePathParts pathsToDataFrame
 #' @description Functions to search for path names in DSS files.
 #' @usage
+#' \code{getCatalogedPathnames(file)}
 #' \code{getPaths(file, searchString)}
 #' \code{getPaths(file, searchString, searchFunction, ...)}
-#' \code{getAllPaths(file, rebuild=FALSE)}
+#' \code{getAllPaths(file, rebuild=TRUE)}
 #' \code{splitPattern(pattern)}
 #' \code{separatePathParts(paths)}
 #' @param file dss file from \code{opendss}
 #' @param searchString string sent to filter for search, see detail section on filters. 
 #' @param searchFunction function used to search, defaults to path by parts.
 #' @param useRegex boolean to determine if regex or wildcards should be used.
-#' @return list of pathnames for use with \code{\link{getFullTSC}}/\code{\link{getFullDT}} functions.
+#' @return list or data.frame of pathnames
 #' @details
 #' functions ending in \code{Wildcard} use the standard "*" to match wildcard characters, converting search strings with \code{\link{glob2rx}}.  Search functions ending in \code{Regex} use the \code{\link{grepl}} function to test parts.
 #' 
@@ -36,6 +37,12 @@
 #' The search pattern string can be provided as an empty string with other parameters provided for the search. \code{splitPattern} will split a path by parts pattern into search terms, and \code{separatePathParts} will split a full path pattern into search terms.
 #' 
 #' @examples
+#' 
+#' # recommended search technique:
+#' paths = pathsToDataFrame(getCatalogedPathnames(dssfile), simplify=T)
+#' bwCreekStagePaths = subset(paths, LOCATION="BRANDYWINE CREEK", PARAMETER="STAGE")$PATH
+#' 
+#' # these can be a little flaky.
 #' getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=USGS")
 #' getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=USGS", pathByPartsWildcard)
 #' getPaths(dssfile, "A=BRANDYWINE CREEK B=WILMINGTON, DE C=STAGE F=US.*", pathByPartsRegex)
@@ -47,7 +54,7 @@
 
 #' @export 
 getAllPaths <- function(file, rebuild=FALSE){
-  require(stringr)
+  # left this function for backwards compatibility purposes, still does check if rebuilding the catalog is needed.
   dss_fn = file$getFilename()
   dsc_fn = sprintf('%s.dsc',tools:::file_path_sans_ext(dss_fn))
   dsc_exists = file.exists(dsc_fn)
@@ -59,14 +66,9 @@ getAllPaths <- function(file, rebuild=FALSE){
   # 2. it is older than the dss file
   # 3. a rebuild is forced with rebuild=TRUE
   if(!isTRUE(dsc_exists) | isTRUE(dss_mtime > dsc_mtime) | isTRUE(rebuild))
-    file$getCatalogedPathnames(TRUE)
+    rebuild = TRUE
   
-  #meta = read.table(dsc_fn,skip=10,stringsAsFactors=FALSE)
-  #paths = meta[,ncol(meta)]
-  dsc = readLines(dsc_fn)
-  paths = dsc[11:length(dsc)]
-  paths = str_sub(paths,19,str_length(paths))  
-  return(paths)
+  return(getCatalogedPathanmes(file, forceRebuild=rebuild))
 }
 
 #' @export
@@ -80,6 +82,7 @@ getCondensedCatalog <- function(file){
   .javaVectorToStrings(file$getCondensedCatalog())
 }
 
+# internal function to convert java vector returned by catalog functions to strings
 .javaVectorToStrings <- function(vect){
   vectList = .jevalArray(vect$toArray())
   sapply(vectList, .jcall, returnSig="S", "toString")

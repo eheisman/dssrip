@@ -20,7 +20,8 @@ NOTE
 }
 \seealso{
 Other getTSC: 
-\code{\link{getTSC}()}
+\code{\link{getTSC}()},
+\code{\link{getTimeSeriesAsDataFrame}()}
 }
 \author{
 Evan Heisman

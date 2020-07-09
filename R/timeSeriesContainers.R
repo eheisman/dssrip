@@ -19,7 +19,7 @@
 tsc.to.xts <- function(tsc, colnamesSource="parameter", offsetForType=FALSE){
   
   metadata = getMetadata(tsc, colnamesSource=colnamesSource)
-  
+  print(metadata)
   # compute offset to account for data type and maybe timezone, etc.
   offset = 0
   # data type - inst vals = 0; period vals += interval
@@ -32,7 +32,7 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter", offsetForType=FALSE){
 
   
   ## TODO: fix tz="UTC" to use local if not specified in tsc's timezone parameter
-  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60+offset, origin="1899-12-31 00:00", tz="UTC")) #, dssMetadata= as.data.frame(metadata))
+  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60+offset, origin="1899-12-31 00:00")) #, dssMetadata= as.data.frame(metadata))
   colnames(out) = metadata[[colnamesSource]]
   
   return(out)
@@ -75,6 +75,24 @@ getFullTSC <- function(file, paths, ...){
     }
   }
   return(getTSC(file, paths[1], fullTSC=TRUE, ...))  
+}
+
+#' getTimeseriesAsDataFrame Get a TSC, ignoring date parameters.
+#' 
+#' Gets paths, converts to `data.frame`, er a `tibble` into a`base::data.frame`
+#' 
+#' @return data.frame of all times and values in time series matching paths.
+#' @author Evan Heisman
+#' @export 
+#' @family getTSC
+getTimeSeriesAsDataFrame <- function(file, path, leaveAsTibble=FALSE, ...){
+  require(broom)
+  tscTibble = tidy(getTSC(file, path, ...))
+  if(isFALSE(leaveAsTibble)){
+    return(data.frame(tscTibble))
+  } else {
+    return(tscTibble)
+  }
 }
 
 # Adjusts "24:00" timestamps back one day so indexing appears appropriately.

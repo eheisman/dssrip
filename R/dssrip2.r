@@ -21,6 +21,7 @@
 #' @param setJavaLoc - override Java location with one in config file. (untested)
 #' @param verbose - set to true for debuggering
 #' @seealso loadConfig
+#' @export
 #' @return JVM initialization status - 0 if successful, positive for partial initialization, negative for failure.  See ?.jinit 
 initialize.dssrip = function(pkgname=NULL, quietDSS=TRUE, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=TRUE, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
