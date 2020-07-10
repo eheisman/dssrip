@@ -4,7 +4,7 @@
 \alias{getMetadata}
 \title{getMetadata get metadata from a tsc java object}
 \usage{
-getMetadata(tsc, colnamesSource = "parameter")
+getMetadata(dc, colnamesSource = "parameter")
 }
 \value{
 data.frame containing metadata

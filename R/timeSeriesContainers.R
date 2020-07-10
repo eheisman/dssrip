@@ -26,14 +26,21 @@ tsc.to.xts <- function(tsc, colnamesSource="parameter", offsetForType=FALSE){
   if(offsetForType){
     if(str_starts(metadata[["type"]], fixed("PER-", ignore_case=TRUE))){
       # period average or period cumulative data, offset by interval
-      offset = int(metdata[["interval"]])
+      offset = -int(metdata[["interval"]])
     }
   }
-
+  granularity = int(metadata[["timeGranularitySeconds"]])
+  if(is.na(granularity)){
+    # minutes by default
+    granularity = 60
+  }
   
   ## TODO: fix tz="UTC" to use local if not specified in tsc's timezone parameter
-  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*60+offset, origin="1899-12-31 00:00")) #, dssMetadata= as.data.frame(metadata))
+  out = xts(tsc$values, order.by=as.POSIXct(tsc$times*granularity + offset, origin="1899-12-31 00:00")) #, dssMetadata= as.data.frame(metadata))
   colnames(out) = metadata[[colnamesSource]]
+  
+  attr(out, "tsc.type") = metadata[["type"]]
+  attr(out, "tsc.units") = metadata[["units"]]
   
   return(out)
 }

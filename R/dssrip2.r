@@ -203,17 +203,18 @@ fieldsDF <- function(jObject){
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
-getMetadata <- function(tsc, colnamesSource="parameter"){
+getMetadata <- function(dc, colnamesSource="parameter"){
   EXCLUDE_FROM_METADATA = c("values", "times", "modified", "quality", "inotes")
   require(stringr)
   require(plyr)
-  tscFieldsDF = get("tscFieldsDF", envir=hecJavaObjectsDB)
-  metadata = dlply(tscFieldsDF, "SHORTNAME", function(df){
+  dcClass = .jclass(dc)
+  fieldsDF = get(dcClass, envir=hecJavaObjectsDB)
+  metadata = dlply(fieldsDF, "SHORTNAME", function(df){
     #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
-    if(df$SHORTNAME %in% c("values", "times", "modified", "quality")) {
+    if(df$SHORTNAME %in% c("values", "times", "modified", "quality", "xOrdinates", "yOrdinates", "xData", "yData")) {
       return()
     }
-    val = try(.jfield(tsc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE)), silent=T)
+    val = try(.jfield(dc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE)), silent=T)
     if(.jnull() == val){
       return(NA)
     }

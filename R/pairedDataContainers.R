@@ -32,9 +32,45 @@ getColumnsByName <- function(file, pdc, column){
   }
 }
 
-#TODO implement this
 #' columnsToDataFrame
-#'
-columnsToDataFrame <- function(file, pdc, colnameFunction=NULL){
-  
+#' @description 
+#' @param file string of filename or HecDss object from `opendss`
+#' @param pdc string of pathname or PairedDataContainer object
+#' @param colnameFunction function that takes pdc object and metadata list to generate column names for the 'yOrdinates' from the PDC, default takes format of 'yParameter.yLabel'.
+#' @export
+getPairedDataAsDataFrame <- function(file, pdc, colnameFunction=joinParameterToLabel){
+  pdc = getPDC(file, pdc)
+  md = getMetadata(pdc)
+  out = list()
+  out[[md$xparameter]] = pdc$xOrdinates
+  nCurves = md$numberCurves
+  # set y column names
+  yColNames = colnameFunction(pdc, md)
+  # pull data
+  for(i in seq(nCurves)){
+    out[[yColNames[i]]] = pdc$yOrdinates[i,]
+  }
+  # merge into dataframe
+  out = do.call(cbind, out)
+  attr(out, "metadata") = md
+  return(out)
+}
+
+#' @export
+joinParameterToLabel <- function(pdc, md){
+  labels = as.character(seq(md$numberCurves))
+  if(md$labelsUsed){
+    labels = md$labels
+  }
+  return(paste(pdc$yparameter,labels,sep="."))
+}
+
+getPDC <- function(file, pdc){
+  if(class(file)=="character"){
+    file = opendss(file)
+  }
+  if(class(pdc)=="character"){
+    pdc = file$get(pdc)
+  }
+  return(pdc)
 }

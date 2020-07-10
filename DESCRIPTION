@@ -17,7 +17,8 @@ Depends:
     zoo,
     stringr,
     plyr,
-    rjson
+    rjson,
+    broom
 Suggests:
     hydroutils
 License: MIT
