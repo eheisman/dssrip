@@ -193,33 +193,32 @@ fieldsDF <- function(jObject){
   return(fields)
 }
 
-#' getMetadata get metadata from a tsc java object 
+#' getMetadata get fields from a java object and convert to R list
 #' 
-#' get metadata from a tsc java object 
-#' 
-#' Long Description
+#' Get a list of fields in the java object and their values.
 #' 
 #' @return data.frame containing metadata 
 #' @note NOTE
 #' @author Evan Heisman
 #' @export 
 getMetadata <- function(dc, colnamesSource="parameter"){
-  EXCLUDE_FROM_METADATA = c("values", "times", "modified", "quality", "inotes")
+  EXCLUDE_FROM_METADATA = c("values", "times", "modified", "quality", "xOrdinates", "yOrdinates", "xData", "yData")
   require(stringr)
   require(plyr)
   dcClass = .jclass(dc)
   fieldsDF = get(dcClass, envir=hecJavaObjectsDB)
   metadata = dlply(fieldsDF, "SHORTNAME", function(df){
     #cat(sprintf("%s\t%s\t%s\n", df$FULLNAME, df$SHORTNAME, df$SIGNATURE))
-    if(df$SHORTNAME %in% c("values", "times", "modified", "quality", "xOrdinates", "yOrdinates", "xData", "yData")) {
+    if(df$SHORTNAME %in% EXCLUDE_FROM_METADATA) {
       return()
     }
     val = try(.jfield(dc, name=df$SHORTNAME, sig=as.character(df$SIGNATURE)), silent=T)
-    if(.jnull() == val){
+    if(.jnull() == val){ # this if empty
       return(NA)
     }
     return(val)
   })
+  # this next line is probably redundant
   metadata = metadata[!(names(metadata) %in% EXCLUDE_FROM_METADATA)]
   
   return(metadata)
