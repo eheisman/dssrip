@@ -68,7 +68,7 @@ getAllPaths <- function(file, rebuild=FALSE){
   if(!isTRUE(dsc_exists) | isTRUE(dss_mtime > dsc_mtime) | isTRUE(rebuild))
     rebuild = TRUE
   
-  return(getCatalogedPathanmes(file, forceRebuild=rebuild))
+  return(getCatalogedPathnames(file, forceRebuild=rebuild))
 }
 
 #' @export
