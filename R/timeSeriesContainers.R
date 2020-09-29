@@ -19,7 +19,7 @@
 tsc.to.xts <- function(tsc, colnamesSource="parameter", offsetForType=FALSE){
   
   metadata = getMetadata(tsc, colnamesSource=colnamesSource)
-  print(metadata)
+  # print(metadata)
   # compute offset to account for data type and maybe timezone, etc.
   offset = 0
   # data type - inst vals = 0; period vals += interval
