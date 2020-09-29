@@ -1,7 +1,7 @@
 The DSS-R *i*nterface *p*roject. (dssrip)
 =========================================
 
-`dssrip` is a package of R functions to read/write data from HEC-DSS file by making calls to the Java methods exposed in HEC-DSSVue's scripting capability.
+`dssrip` is a package of R functions to read data from HEC-DSS file by making calls to the Java methods exposed in HEC-DSSVue's scripting capability.
 
 Provided under MIT license without warranty.
 
