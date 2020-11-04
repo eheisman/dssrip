@@ -14,8 +14,8 @@ Provided under MIT license without warranty.
 
 # Install Instructions:
 
-## R libraries required
-If you haven't already, install the `rJava`, `plyr`, `reshape2`, `stringr`, and `devtools` packages.  
+## R packages required
+If you haven't already, install the `rJava`, `plyr`, `reshape2`, `stringr`, `xts`, `broom`, and `rjson` packages that are required by the `dssrip` package's code.  In addition, `devtools` is used to install directly from github.
 
 ## DSS libraries
 You can download a copy of DSSVue or a number of other HEC programs that run on Java (most of them except for HEC-RAS) to get the required .jar and .dll files to make `dssrip` work.  I highly recommend you use the [copy here for 64-bit use](https://www.hec.usace.army.mil/software/hec-dssvue/downloads/dev/HEC-DSSVue-v3.0.00.212.7z).  `dssrip` is now packaged with a file called `jar_config.json` that helps find the appropriate libraries depending on the HEC program used to supply the .jar files.  If you're using another program, you can make a copy of this file, add a configuration for that program, and set the option `dss_config_filename` in your `.Rprofile` file to ensure `dssrip` finds the correct settings.
