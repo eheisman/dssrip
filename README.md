@@ -15,7 +15,7 @@ Provided under MIT license without warranty.
 # Install Instructions:
 
 ## R packages required
-If you haven't already, install the `rJava`, `plyr`, `reshape2`, `stringr`, `xts`, `broom`, and `rjson` packages that are required by the `dssrip` package's code.  In addition, `devtools` is used to install directly from github.
+If you haven't already, install the `rJava`, `plyr`, `reshape2`, `stringr`, `xts`, `broom`, and `rjson` packages that are required by the `dssrip` package's code.  In addition, `remotes` (previously `devtools`) is recommended to install directly from github.
 
 ## DSS libraries
 You can download a copy of DSSVue or a number of other HEC programs that run on Java (most of them except for HEC-RAS) to get the required .jar and .dll files to make `dssrip` work.  I highly recommend you use the [copy here for 64-bit use](https://www.hec.usace.army.mil/software/hec-dssvue/downloads/dev/HEC-DSSVue-v3.0.00.212.7z).  `dssrip` is now packaged with a file called `jar_config.json` that helps find the appropriate libraries depending on the HEC program used to supply the .jar files.  If you're using another program, you can make a copy of this file, add a configuration for that program, and set the option `dss_config_filename` in your `.Rprofile` file to ensure `dssrip` finds the correct settings.
@@ -39,9 +39,9 @@ if(R.Version()$arch=="x86_64"){
 ```
 
 ## Installing the package
-Finally, to install `dssrip` , use the `devtools` package's `install_github` function.
+Finally, to install `dssrip` , use the `remotes` package's `install_github` function.
 ```
-devtools::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch", ref="tidyup")
+remotes::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch", ref="tidyup")
 ```
 
 The ```'--no-multiarch'``` parameter is required to force it to install only the current architecture.  If you do not have the options set to point to a version of the javaHeclib.dll file with the same architecture as the version of R that you are running, the install will fail.  If you need to use both 64-bit and 32-bit R, you will have to install it once for each version.
@@ -64,7 +64,7 @@ Other `options` that can be used to help the package load correctly by pointing 
 
 
 # Usage:
-Load ```dssrip``` as a library with `require(dssrip)` or `library(dssrip`.
+Load ```dssrip``` as a library with `require(dssrip)` or `library(dssrip)`.
 
 `myFile = opendss(dssFilename)` to open a DSS file or to create a new one.  
 
