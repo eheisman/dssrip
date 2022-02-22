@@ -3,8 +3,8 @@ Title: DSS R Interface Project
 Version: 0.3
 Date: 2020-06-26
 Architecture: i386, x86_64
-Author: Evan A. Heisman, with contributions from Cameron Bracken
-Maintainer: Evan Heisman <heisman+dssrip@gmail.com>
+Author: Evan A. Heisman, with significant contributions from Cameron Bracken
+Maintainer: Evan Heisman <evan.a.heisman@usace.army.mil>
 URL: http://github.com/eheisman/DSS-Rip
 Description: A wrapper for the HEC-DSSVue program's 'Jython' API, allowing an
     interface between R and many common hydrologic models.  In order to use
@@ -22,5 +22,4 @@ Depends:
 Suggests:
     hydroutils
 License: MIT
-BugReports: heisman+dssripbugs@gmail.com
 RoxygenNote: 7.1.0
