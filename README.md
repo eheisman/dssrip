@@ -3,7 +3,7 @@ The DSS-R *i*nterface *p*roject. (dssrip)
 
 `dssrip` is a package of R functions to read data from HEC-DSS file by making calls to the Java methods exposed in HEC-DSSVue's scripting capability.
 
-Provided under MIT license without warranty.
+Provided under MIT license without warranty.  Minimal support will be provided outside of my organization.
 
 # About branches
 `dssrip` is being significantly rewritten to fix a number of issues with the latest versionss of `rJava` and `R` itself.  The existing branches are:
