@@ -36,7 +36,7 @@ if(R.Version()$arch=="x86_64"){
 ## Installing the package
 Finally, to install `dssrip` , use the `remotes` package's `install_github` function.
 ```
-remotes::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch", ref="tidyup")
+remotes::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch", ref="main")
 ```
 
 The ```'--no-multiarch'``` parameter is required to force it to install only the current architecture.  If you do not have the options set to point to a version of the javaHeclib.dll file with the same architecture as the version of R that you are running, the install will fail.  If you need to use both 64-bit and 32-bit R, you will have to install it once for each version.
