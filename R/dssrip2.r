@@ -23,7 +23,7 @@
 #' @seealso loadConfig
 #' @export
 #' @return JVM initialization status - 0 if successful, positive for partial initialization, negative for failure.  See ?.jinit 
-initialize.dssrip = function(pkgname=NULL, quietDSS=TRUE, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=TRUE, ...){
+initialize.dssrip = function(pkgname="dssrip", quietDSS=TRUE, parameters=options()[["dss_jvm_parameters"]], setJavaLoc=FALSE, verbose=TRUE, ...){
   ## parameters examples: '-Xmx2g -Xms1g' to set up memory requirements for JVM to 2g heap and 1g stack.
 
   require(stringr)
@@ -56,7 +56,7 @@ initialize.dssrip = function(pkgname=NULL, quietDSS=TRUE, parameters=options()[[
   
   # initialize JVM/rJava
   # Don't use the jars and nativeLibrary path as the DSS libraries are external to this package
-  .jpackage(pkgname, lib.loC) #, jars=jars) #, java.parameters=libpath)
+  .jpackage(pkgname) #lib.loc, jars=jars) #, java.parameters=libpath)
 
   # is this necessary? appears so
   javaImport(packages = "java.lang") 
