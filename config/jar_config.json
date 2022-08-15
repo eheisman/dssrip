@@ -1,6 +1,18 @@
 {
   "configs": [
     {
+      "name": "monolith-win-x86_64",
+      "state": "untested",
+      "notes":"this should be a more stable configuration, installable from CRAN someday",
+      "platform": "x86_64-w64-mingw32",
+      "path.sep": "\\",
+      "dss_location": "C:\\projects\\dssrip",
+      "jars": ["monolith\\hec-monolith-3.0.0-rc5.jar"],
+      "libs": ["monolith\\lib"],
+      "lib.ext": "dll",
+      "JAVA_HOME": "jdk-8"
+      },
+    {
       "name": "dssvue3-win64",
       "state": "tested",
       "notes": "this is the best supported configuration",

@@ -146,11 +146,13 @@ dssConfig = function(configFileName=options()[["dss_config_filename"]],
     isAllowedState = config$state %in% allowedStates # only use if allowed state
 
     # debug block
-    # checks = c(matchPlatform=matchPlatform, foundJars=foundJars, isDefaultConfig=isDefaultConfig, isAllowedState=isAllowedState)
-    # system = c(matchPlatform=platform, foundJars="", isDefaultConfig=defaultConfig, isAllowedState="")
-    # setting = c(matchPlatform=config$platform, foundJars="", isDefaultConfig=config$name, isAllowedState=config$state)
-    # checksdf = data.frame(SYSTEM=system, SETTING=setting, CHECKS=checks)
-    # print(checksdf)
+    if(!is.null(options("dssrip_debug"))){
+      checks = c(matchPlatform=matchPlatform, foundJars=foundJars, isDefaultConfig=isDefaultConfig, isAllowedState=isAllowedState)
+      system = c(matchPlatform=platform, foundJars="", isDefaultConfig=defaultConfig, isAllowedState="")
+      setting = c(matchPlatform=config$platform, foundJars="", isDefaultConfig=config$name, isAllowedState=config$state)
+      checksdf = data.frame(SYSTEM=system, SETTING=setting, CHECKS=checks)
+      print(checksdf)
+    }
     
     if(matchPlatform & (foundJars | isDefaultConfig) & isAllowedState){
       foundConfig = TRUE
