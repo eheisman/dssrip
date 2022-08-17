@@ -138,7 +138,21 @@ dssConfig = function(configFileName=options()[["dss_config_filename"]],
     jarList = paste0(dss_location, config$jars)
     libList = paste0(dss_location, config$libs)
     javaLocation = paste0(dss_location, config$JAVA_HOME)
-
+    
+    # if ext.resources in config, for each external resource, check if they exist and if not, download
+    if("ext.resources" %in% names(config)){
+      for(destination in names(config$ext.resources)){
+        remoteLocation = config$ext.resources[[destination]]
+        absoluteDestination = paste0(dss_location, destination)
+        print(absoluteDestination)
+        print(remoteLocation)
+        if(!file.exists(absoluteDestination)){
+          # insert try clause here to warn about failed downloads
+          download.file(remoteLocation, absoluteDestination, method="curl")
+        }
+      }
+    }
+    
     # check if this config is can be used
     matchPlatform = config$platform == platform # use only if this is true
     foundJars = (all(file.exists(jarList)) & all(file.exists(libList))) # check if these exists
