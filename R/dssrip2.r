@@ -68,6 +68,7 @@ initialize.dssrip = function(pkgname="dssrip", quietDSS=TRUE, parameters=options
   
   # proper way to do these from rJava 0.9-12
   javaHeclibPath =  paste0(libs[1], path.sep, "javaHeclib.", lib.ext)
+  
   .jaddLibrary("javaHeclib", javaHeclibPath)
   .jaddClassPath(jars)
   
@@ -148,7 +149,12 @@ dssConfig = function(configFileName=options()[["dss_config_filename"]],
         print(remoteLocation)
         if(!file.exists(absoluteDestination)){
           # insert try clause here to warn about failed downloads
+          # TODO: if remote ends in .zip and destination does not, unzip it.
+          mustUnzip = str_ends(remoteLocation, fixed(".zip")) # & !str_ends(destination, fixed(".zip"))
           download.file(remoteLocation, absoluteDestination, method="curl")
+          if(mustUnzip){
+            unzip(absoluteDestination, exdir=dirname(absoluteDestination))
+          }
         }
       }
     }

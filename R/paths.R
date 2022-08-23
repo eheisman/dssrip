@@ -82,12 +82,6 @@ getCondensedCatalog <- function(file){
   .javaVectorToStrings(file$getCondensedCatalog())
 }
 
-# internal function to convert java vector returned by catalog functions to strings
-.javaVectorToStrings <- function(vect){
-  vectList = .jevalArray(vect$toArray())
-  sapply(vectList, .jcall, returnSig="S", "toString")
-}
-
 #' @export 
 getPaths <- function(file, searchString="/*/*/*/*/*/*/", 
                      searchfunction=NULL, pattern=searchString, searchFunction=searchfunction, 
