@@ -11,22 +11,24 @@ Provided under MIT license without warranty.  Minimal support will be provided t
 If you haven't already, install the `rJava`, `plyr`, `reshape2`, `stringr`, `xts`, `broom`, and `rjson` packages that are required by the `dssrip` package's code.  In addition, `remotes` (previously `devtools`) is recommended to install directly from github.
 
 ## DSS libraries
-The 0.4 version of `dssrip` downloads it's own dependencies during the installation process.  To make this work, the following options need to be set prior to installation:
-- `dss_override_location`: where do you want the dependencies to go
-- `dss_config_filename`: location of a .json file spelling out required dependencies, see example in `config` directory of this repository.
+As of the 0.4 version of `dssrip`, the package will download it's own dependencies during the installation process (or the first time it is run, if manually installed).  
+
+To make this work, the following options need to be set prior to installation:
+- `dss_override_location`: where do you want the dependencies to go.  This directory should exist and contain two sub-directories, "jar" and "lib", otherwise the dependency download via `curl` will fail.
+- `dss_config_filename`: location of a .json file spelling out required dependencies and JVM location, see example in `config` directory of this repository.
 
 I make this work with the following in my `.Rprofile`:
 ```
+# this line tells dssrip where to store / find the dependencies, you must be able to load a .dll from this location.
 options(dss_override_location="c:\\projects\\dssrip\\monolith")
+# this points to a config file that isn't the default used by the package.  I recommend doing this manual step.
 options(dss_config_filename="~\\dssrip.config")
+# This config is the current prefered method of using dssrip
 options(dss_default_config="monolith-win-x86_64")
-# options(dss_allowed_states="untested") # optional
+# required if default config is not a "tested" configuration.
+options(dss_allowed_states="untested") 
 options(dssrip_debug=T)
 ```
-
-If you want to download DSSVue and use it for the dependencies (the required .jar and .dll files to make `dssrip` work), I highly recommend you use either [the 3.2 or 3.3 beta version here](https://www.hec.usace.army.mil/software/hec-dssvue/downloads.aspx).
-
-`dssrip` uses a file called `jar_config.json` that helps find the appropriate libraries depending on the HEC program used to supply the .jar files.  If you're using a different version of DSSVue or another program, you can make a copy of this file, add a configuration for that program, and set the option `dss_config_filename` in your `.Rprofile` file to ensure `dssrip` finds the correct settings.
 
 ## Installing the package
 After configuring as above, to install `dssrip`, use the `remotes` package's `install_github` function.
@@ -36,7 +38,8 @@ remotes::install_github("eheisman/dssrip", INSTALL_opts = "--no-multiarch", ref=
 
 The ```'--no-multiarch'``` parameter is required to force it to install only the current architecture.  If you do not have the options set to point to a version of the javaHeclib.dll file with the same architecture as the version of R that you are running, the install will fail.  If you need to use both 64-bit and 32-bit R, you will have to install it once for each version.
 
-## `.Rprofile` settings required for using DSSVue as dependencies.
+
+## *Deprecated*: `.Rprofile` settings required for using DSSVue as dependencies.
 Two settings need to be applied in your `.Rprofile` file to install and load `dssrip` correctly.  Without setting these, it falls back to the settings in the default `jar_config.json` file which may not work for your machine.  The install process for R packages happens in a clean environment, so setting them in your script prior to running install may not set them in that environment.
 
 Setting the environment variable `JAVA_HOME` helps the `rJava` package that `dssrip` depends on find the correct Java executables.  For compatibility reasons, it should be pointed to the location of the Java Runtime included with the DSS libraries you are using.
@@ -52,14 +55,14 @@ if(R.Version()$arch=="x86_64"){
 }
 ```
 
-## Note: for DSS installed elsewhere than Program Files
+### Note: for DSS installed elsewhere than Program Files
 Set the following in your .Rprofile, or run before you install and/or load dssrip:
 ```
   options(dss_override_location="c:\\programs\\HEC-DSSVue-v3.0.00.212\\")
 ```
 `dssrip` now automatically detects if the file separator character is needed on the end of this path, but including it is a safe option.
 
-## Options to help with loading `dssrip`
+## R `options` to modify the process to load DSS dependencies for `dssrip`
 Other `options` that can be used to help the package load correctly by pointing to the correct DSS .jar and library files:
 
 - `dss_override_location` file path to force dssrip to load a particular set of dss libraries.  It will look for all configurations using only this location.
