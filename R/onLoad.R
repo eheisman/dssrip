@@ -9,6 +9,7 @@
   javaObjs = new.env()
   assign("hec.io.TimeSeriesContainer", fieldsDF(.jnew("hec/io/TimeSeriesContainer")), javaObjs)
   assign("hec.io.PairedDataContainer", fieldsDF(.jnew("hec/io/PairedDataContainer")), javaObjs)
+  assign("hec.io.TimeSeriesContainerVertDatum", fieldsDF(.jnew("hec/io/TimeSeriesContainerVertDatum")), javaObjs)
   assign("hecJavaObjectsDB", javaObjs, envir=parent.env(environment()))
   assign("DSS_CONSTANTS", J("hec/script/Constants"), envir=parent.env(environment()))
   assign("TSC_INTERVALS", TSC_INTERVALS, envir=parent.env(environment()))

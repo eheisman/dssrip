@@ -7,23 +7,28 @@
       "platform": "x86_64-w64-mingw32",
       "path.sep": "\\",
       "dss_location": "C:\\projects\\dssrip\\monolith",
-      "jars": ["jar\\hec-monolith-3.0.0-rc9.jar", 
-               "jar\\hec-monolith-compat-3.0.0-rc9.jar",
-               "jar\\hecnf-5.0.0-rc3.jar",
-               "jar\\hec-nucleus-metadata-1.1.0.jar",
+      "jars": ["jar\\hec-monolith-3.3.24.jar", 
+               "jar\\hec-monolith-compat-3.3.24.jar",
+               "jar\\hecnf-6.0.00.100.jar",
+               "jar\\hec-nucleus-metadata-3.0.1.jar",
+               "jar\\hec-nucleus-data-3.0.1.jar",
                "jar\\flogger-0.5.1.jar",
-               "jar\\flogger-system-backend-0.5.1.jar"],
+               "jar\\flogger-system-backend-0.5.1.jar",
+               "jar\\jdom-1.1.3.jar"],
       "libs": ["lib"],  
       "lib.ext": "dll",
+      "JAVA_HOME": "jdk-11",
       "ext.resources":
       {
-        "jar\\hec-monolith-3.0.0-rc9.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-monolith/3.0.0-rc9/hec-monolith-3.0.0-rc9.jar"],
-        "jar\\hec-monolith-compat-3.0.0-rc9.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-monolith-compat/3.0.0-rc9/hec-monolith-compat-3.0.0-rc9.jar"],
-        "jar\\hecnf-5.0.0-rc3.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hecnf/6.0.00.100/hecnf-6.0.00.100.jar"],
-        "jar\\hec-nucleus-metadata-1.1.0.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-nucleus-metadata/1.1.0/hec-nucleus-metadata-1.1.0.jar"],
+        "jar\\hec-monolith-3.3.24.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-monolith/3.3.24/hec-monolith-3.3.24.jar"],
+        "jar\\hec-monolith-compat-3.3.24.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-monolith-compat/3.3.24/hec-monolith-compat-3.3.24.jar"],
+        "jar\\hecnf-6.0.00.100.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hecnf/6.0.00.100/hecnf-6.0.00.100.jar"],
+        "jar\\hec-nucleus-metadata-3.0.1.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-nucleus-metadata/3.0.1/hec-nucleus-metadata-3.0.1.jar"],
+        "jar\\hec-nucleus-data-3.0.1.jar": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/hec-nucleus-data/3.0.1/hec-nucleus-data-3.0.1.jar"],
         "jar\\flogger-0.5.1.jar": ["https://repo1.maven.org/maven2/com/google/flogger/flogger/0.5.1/flogger-0.5.1.jar"],
         "jar\\flogger-system-backend-0.5.1.jar": ["https://repo1.maven.org/maven2/com/google/flogger/flogger-system-backend/0.5.1/flogger-system-backend-0.5.1.jar"],
-        "lib\\javaHeclib-7-IH-win-x86_64.zip": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/javaHeclib/7-IH-win-x86_64/javaHeclib-7-IH-win-x86_64.zip"]
+        "jar\\jdom-1.1.3.jar": ["https://repo1.maven.org/maven2/org/jdom/jdom/1.1.3/jdom-1.1.3.jar"],
+        "lib\\javaHeclib-7-IS-win-x86_64.zip": ["https://www.hec.usace.army.mil/nexus/repository/maven-public/mil/army/usace/hec/javaHeclib/7-IS-win-x86_64/javaHeclib-7-IS-win-x86_64.zip"]
       }
     },
     {
