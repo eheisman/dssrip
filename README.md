@@ -1,7 +1,7 @@
 The DSS-R *i*nterface *p*roject. (dssrip)
 =========================================
 
-*The use of the `dssrip package` is not endorsed by the Hydrologic Engineering Center (HEC) and the Hydrologic Engineering Center cannot guarantee the results of using this package.  Do not expect support or assistance with the use of this package, and there are no plans for future updates to this package.*
+*The use of the `dssrip` package is not endorsed by the Hydrologic Engineering Center (HEC) and the Hydrologic Engineering Center cannot guarantee the results of using this package.  Do not expect support or assistance with the use of this package, and there are no plans for future updates to this package.*
 
 
 `dssrip` is a package of R functions to read data from HEC-DSS file by making calls to the Java methods exposed in HEC-DSSVue's scripting capability.
